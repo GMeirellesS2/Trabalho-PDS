@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Paciente, Medico, Consulta, Prontuario
+from .models import Paciente, Medico, Consulta, Prontuario, Recepcionista, Especialidade
 
 @admin.register(Paciente)
 class PacienteAdmin(admin.ModelAdmin):
@@ -24,3 +24,11 @@ class ConsultaAdmin(admin.ModelAdmin):
 class ProntuarioAdmin(admin.ModelAdmin):
     list_display = ('id_consulta_pront', 'data_registro', 'crm_medico_pront', 'cpf_paciente_pront')
     list_filter = ('data_registro',)
+
+@admin.register(Recepcionista)
+class RecepcionistaAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'cpf', 'telefone')
+
+@admin.register(Especialidade)
+class EspecialidadeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nome')
