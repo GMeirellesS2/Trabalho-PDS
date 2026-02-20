@@ -1,0 +1,66 @@
+from django.db import models
+from django.contrib.auth.models import User  # Importamos o usuário padrão do Django
+
+class Paciente(models.Model):
+    cpf = models.CharField(primary_key=True, max_length=14)
+    nome_paciente = models.CharField(max_length=255, blank=True, null=True)
+    data_nasc = models.DateField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    convenio = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Indica que a tabela já existe no banco
+        db_table = 'paciente'
+
+    def __str__(self):
+        return f"{self.nome_paciente} ({self.cpf})"
+
+class Medico(models.Model):
+    crm = models.CharField(primary_key=True, max_length=20)
+    # Aqui conectamos o médico ao usuário do Django (para ele fazer login)
+    usuario_medico = models.OneToOneField(User, on_delete=models.SET_NULL, db_column='usuario_medico', blank=True, null=True)
+    especialidade = models.CharField(max_length=100, blank=True, null=True)
+    telefone = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'medico'
+
+    def __str__(self):
+        return f"Dr(a). {self.usuario_medico.username if self.usuario_medico else 'Sem Usuário'} - CRM: {self.crm}"
+
+class Consulta(models.Model):
+    # Alterei DecimalField para AutoField (um ID padrão numérico) para evitar bugs visuais
+    id_consulta = models.AutoField(primary_key=True)
+    data_hora = models.DateField(blank=True, null=True)
+    crm_medico = models.ForeignKey(Medico, on_delete=models.DO_NOTHING, db_column='crm_medico', blank=True, null=True)
+    cpf_paciente = models.ForeignKey(Paciente, on_delete=models.DO_NOTHING, db_column='cpf_paciente', blank=True, null=True)
+    status = models.CharField(max_length=50, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'consulta'
+
+    def __str__(self):
+        return f"Consulta {self.id_consulta} - {self.data_hora}"
+
+class Prontuario(models.Model):
+    # O Django OBRIGA todo model a ter uma primary_key.
+    # Como não tinha nenhuma, coloquei a id_consulta_pront como Chave Primária por enquanto.
+    id_consulta_pront = models.OneToOneField(Consulta, on_delete=models.DO_NOTHING, db_column='id_consulta_pront', primary_key=True)
+    crm_medico_pront = models.ForeignKey(Medico, on_delete=models.DO_NOTHING, db_column='crm_medico_pront', blank=True, null=True)
+    cpf_paciente_pront = models.ForeignKey(Paciente, on_delete=models.DO_NOTHING, db_column='cpf_paciente_pront', blank=True, null=True)
+    historico_clinico = models.TextField(blank=True, null=True)
+    exame_fisico = models.TextField(blank=True, null=True)
+    diagnostico = models.TextField(blank=True, null=True)
+    prescricao = models.TextField(blank=True, null=True)
+    exames_solicitados = models.TextField(blank=True, null=True)
+    data_registro = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'prontuario'
+
+    def __str__(self):
+        return f"Prontuário da Consulta {self.id_consulta_pront}"

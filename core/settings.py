@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'clinica',
 ]
 
 MIDDLEWARE = [
@@ -75,10 +76,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sistema_pds',
+        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',
+        'PASSWORD': 'facompds20252',
+        'HOST': 'db.tilffoixrghnflymftqp.supabase.co',
         'PORT': '5432',
     }
 }
@@ -106,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
