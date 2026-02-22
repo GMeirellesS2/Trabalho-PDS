@@ -7,6 +7,7 @@ def validar_cpf(valor):
         raise ValidationError("CPF deve conter exatamente 11 números\n")
 
 
+
 class Paciente(models.Model):
     cpf = models.CharField(primary_key=True, max_length=14, validators=[validar_cpf])
     nome_paciente = models.CharField(max_length=255, blank=True, null=True)
