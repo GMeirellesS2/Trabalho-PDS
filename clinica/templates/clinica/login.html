@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Sistema Clínica</title>
+</head>
+<body>
+    <div style="max-width: 300px; margin: 100px auto;">
+        <h2>Acesso do Colaborador</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label>Usuário:</label><br>
+                {{ form.username }}
+            </div>
+            <br>
+            <div>
+                <label>Senha:</label><br>
+                {{ form.password }}
+            </div>
+            <br>
+            <button type="submit">Entrar no Sistema</button>
+        </form>
+    </div>
+</body>
+</html>
