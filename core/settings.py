@@ -125,3 +125,16 @@ STATIC_URL = 'static/'
 LOGIN_URL = '/login/'  # Redireciona para aqui se não estiver logado
 LOGIN_REDIRECT_URL = '/'  # Vai para a home após o login
 LOGOUT_REDIRECT_URL = '/login/' # Vai para o login após sair
+
+
+STATIC_URL = 'static/'
+# Esta configuração é fundamental para o Django encontrar a pasta da sua aplicação
+STATICFILES_DIRS = [
+    BASE_DIR / "clinica" / "static",
+]
+
+
+# Redireciona para a página inicial após o login
+LOGIN_REDIRECT_URL = 'home'
+# Redireciona para a página inicial após o logout
+LOGOUT_REDIRECT_URL = 'home'

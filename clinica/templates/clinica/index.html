@@ -1,44 +1,37 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% load static %}<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema da Clínica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
-    {% if user.is_authenticated %}
-        <p>Bem-vindo, {{ user.username }}!</p>
+    <nav>
+        <div class="logo suave-hover">
+            <img src="{% static 'components/imagem_2026-02-22_175526715-removebg-preview.png' %}" alt="">
+        </div>
+        <div class="navigation">
+            <a href="" class="suave-hover">Pagina Inicial</a>
+            <a href="" class="suave-hover">Servicos</a>
+            <a href="" class="suave-hover">Blog</a>
+        </div>
+        <div class="login">
+            <a href="{% url 'login' %}" class="suave-hover">Login</a>
+        </div>
+    </nav>
 
-        {% if is_medico %}
-            <button>Ver Meus Prontuários</button>
-            <button>Minhas Consultas</button>
-        {% endif %}
+    <main>
+        <h1>Sua Clínica Online</h1>
+        <h2 class="typing-animation">Tecnologia em um futuro mais saudável</h2>
+        <p>Otimize a sua rotina diária com ferramentas inteligentes de agendamento e prontuários digitais de última geração. Desenvolvemos uma plataforma totalmente integrada que simplifica os processos administrativos e reduz a burocracia, garantindo que o seu foco e tempo permaneçam sempre onde realmente importam: na saúde, no bem-estar e no cuidado humanizado de cada um dos seus pacientes.</p>
+        <div class="mainButtons">
+            <a href="" class="contrate suave-hover">Contrate</a>
+            <a href="{% url 'login' %}" class="loginH suave-hover">Login</a>
+        </div>
+        
+    </main>
 
-        {% if is_recepcionista %}
-            <button>Cadastrar Novo Paciente</button>
-            <button>Agendar Consulta</button>
-        {% endif %}
-
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Sair</button>
-        </form>
-    {% else %}
-        <a href="{% url 'login' %}">Fazer Login</a>
-    {% endif %} 
-    <h1>Bem-vindo ao Sistema da Clínica</h1>
-    <hr> <h2>Nossos Pacientes Cadastrados:</h2>
-
-    <ul>
-        {% for paciente in lista_pacientes %}
-            <li>
-                <strong>{{ paciente.nome_paciente }}</strong> <br>
-                CPF: {{ paciente.cpf }} | Convênio: {{ paciente.convenio }}
-            </li>
-            <br>
-        {% empty %}
-            <li>Nenhum paciente cadastrado no momento.</li>
-        {% endfor %}
-    </ul>
-<!-- a -->
+    
 </body>
 </html>

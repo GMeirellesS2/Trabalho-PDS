@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema da Clínica</title>
+</head>
+<body>
+    
+    {% if user.is_authenticated %}
+        <p>Bem-vindo, {{ user.username }}!</p>
+
+        {% if is_medico %}
+            <button>Ver Meus Prontuários</button>
+            <button>Minhas Consultas</button>
+        {% endif %}
+
+        {% if is_recepcionista %}
+            <button>Cadastrar Novo Paciente</button>
+            <button>Agendar Consulta</button>
+        {% endif %}
+
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Sair</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Fazer Login</a>
+    {% endif %} 
+    <h1>Bem-vindo ao Sistema da Clínica</h1>
+    <hr> <h2>Nossos Pacientes Cadastrados:</h2>
+
+    <ul>
+        {% for paciente in lista_pacientes %}
+            <li>
+                <strong>{{ paciente.nome_paciente }}</strong> <br>
+                CPF: {{ paciente.cpf }} | Convênio: {{ paciente.convenio }}
+            </li>
+            <br>
+        {% empty %}
+            <li>Nenhum paciente cadastrado no momento.</li>
+        {% endfor %}
+    </ul>
+<!-- a -->
+</body>
+</html>
