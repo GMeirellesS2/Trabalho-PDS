@@ -20,3 +20,4 @@ def home(request):
         'is_medico': is_medico,
     }
     return render(request, 'clinica/home.html', contexto)
+

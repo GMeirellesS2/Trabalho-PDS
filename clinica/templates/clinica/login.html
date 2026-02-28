@@ -1,26 +1,25 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Login | Sistema Clínica</title>
-    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
-    <div style="max-width: 300px; margin: 100px auto;">
+    <div class="containerLogin">
         <h2>Acesso do Colaborador</h2>
         <form method="post">
             {% csrf_token %}
-            <div>
-                <label>Usuário:</label><br>
-                {{ form.username }}
+            <div class="input">
+                <label>Usuário:</label> <br>
+                <div class="suave-hover">{{ form.username}}</div>
             </div>
-            <br>
-            <div>
+            <div class="input">
                 <label>Senha:</label><br>
-                {{ form.password }}
+                <div class="suave-hover">{{ form.password}}</div>
             </div>
-            <br>
-            <button type="submit">Entrar no Sistema</button>
+            <button type="submit" class="suave-hover">Entrar</button>
         </form>
     </div>
 </body>
