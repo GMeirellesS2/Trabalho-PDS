@@ -25,7 +25,7 @@ class Paciente(models.Model):
 class Medico(models.Model):
     crm = models.CharField(primary_key=True, max_length=20)
     # Aqui conectamos o médico ao usuário do Django (para ele fazer login)
-    usuario_medico = models.OneToOneField(User, on_delete=models.SET_NULL, db_column='usuario_medico', blank=True, null=True)
+    usuario_medico = models.CharField(max_length=255, db_column='usuario_medico', blank=True, null=True)
     especialidade = models.CharField(max_length=100, blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
     id_especialidade = models.ForeignKey('Especialidade', on_delete=models.DO_NOTHING, db_column='id_especialidade',blank=True,null=True)

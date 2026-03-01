@@ -1,15 +1,23 @@
+# Trabalho-PDS/clinica/views.py
+
 from django.shortcuts import render
-from .models import Paciente  # <-- Importamos o modelo de Paciente
+from django.contrib.auth.decorators import login_required
+from .models import Paciente, Medico
+from django.shortcuts import render
 
+def index(request):
+    return render(request, 'clinica/index.html')
 
+@login_required
 def home(request):
-    # Pede ao Django para buscar TODOS os pacientes lá no Supabase
     pacientes = Paciente.objects.all()
+    
+    # Verifica se existe um médico com o nome de utilizador atual
+    is_medico = Medico.objects.filter(usuario_medico=request.user.username).exists()
 
-    # Criamos um "pacote" (contexto) para enviar esses dados para o HTML
     contexto = {
-        'lista_pacientes': pacientes
+        'lista_pacientes': pacientes,
+        'is_medico': is_medico,
     }
+    return render(request, 'clinica/home.html', contexto)
 
-    # Passamos o contexto como terceiro argumento
-    return render(request, 'clinica/index.html', contexto)

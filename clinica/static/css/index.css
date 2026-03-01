@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+body{
+    background-image: url("../components/backgroundlogin.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: top;
+    color: rgb(0, 0, 0);
+    font-family: "Red Hat Text", sans-serif;
+    font-optical-sizing: auto;
+     font-weight: weight;
+    font-style: normal;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+nav{
+    margin-top: 0px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 18px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.336);
+    border-bottom: 1px solid black;
+}
+nav .logo img{
+    height: 50px;
+}
+nav .logo_{
+    width: 200px;
+}
+
+nav .navigation{
+    margin-right: 40px;
+    display: flex;
+    align-items: center;
+}
+
+
+nav .navigation a{
+    align-self: center;
+    color: black;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 10px;
+    margin-right: 30px;
+}
+nav .login{
+    width: 200px;
+    display: flex;
+    align-items: end;
+}
+nav .login a{
+
+    color: black;
+    font-weight: 400;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 28, 151);
+    border-radius: 50px;
+    text-decoration: none;
+    text-align: center;
+    padding: 5px 30px;
+    margin-left: 20px;
+}
+
+main{
+    margin-top: 10%;
+    display: flex;
+    flex-direction: column;
+}
+
+h1{
+    letter-spacing: 7px;
+    font-size: 50px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 0px;
+}
+h2{
+    text-align: center;
+    color: rgb(0, 28, 151);
+    margin-top: 0px;
+    width: 100px;
+}
+
+main p{
+    max-width: 900px;
+    text-align: center;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+
+main .mainButtons{
+    align-self: center;
+    justify-content: space-around;
+}
+main .contrate{
+    font-size: 22px;
+    text-align: center;
+    width: 100px;
+    padding: 5px;
+    color: black;
+    border: black solid 1px;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-right: 100px;
+}
+
+main .loginH{
+    font-size: 22px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 28, 151);
+    border-radius: 50px;
+    text-decoration: none;
+    text-align: center;
+    padding: 5px 30px;
+    margin-right: 30px;
+}
+
+.typing-animation {
+    display: inline-block;
+    overflow: hidden;
+    border-right: .15em solid orange;
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: 6px;
+    
+    /* 1. Aumentamos o tempo total para 10.5s (3.5s de escrita + 7s de espera) */
+    animation: 
+        typing 10.5s steps(40, end) infinite,
+        blink-caret .75s step-end infinite;
+}
+
+/* 2. Ajustamos os Keyframes para a animação terminar em 33% do tempo */
+/* (33% de 10.5s é aproximadamente os 3.5s originais de escrita) */
+@keyframes typing {
+    0% { width: 0; }
+    33% { width: 100%; } /* Termina de escrever aqui */
+    100% { width: 100%; } /* Mantém o texto visível até ao fim dos 10.5s */
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: rgb(47, 0, 255); }
+}
+
+/* Trabalho-PDS/clinica/static/clinica/css/style.css */
+
+.suave-hover {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transição fluida */
+    cursor: pointer;
+    display: inline-block; /* Garante que o efeito de escala funcione bem */
+}
+
+.suave-hover:hover {
+    /* 1. Elevação leve */
+    transform: translateY(-5px);
+    
+    /* 2. Sombra suave para dar profundidade (efeito de flutuar) */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    
+    /* 3. Brilho opcional */
+    filter: brightness(1.05);
+}
+
+/* Efeito extra quando o utilizador clica */
+.suave-hover:active {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
