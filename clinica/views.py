@@ -2,12 +2,29 @@
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from .models import Paciente, Medico, Consulta
-from django.shortcuts import render
 
 def index(request):
     return render(request, 'clinica/index.html')
+
+@login_required
+def buscar_paciente(request):
+    query = request.GET.get('busca')
     
+    if query:
+        # Se o usuário digitar apenas os números do CPF (sem pontos/traços)
+        clean_query = ''.join(filter(str.isdigit, query))
+        
+        pacientes = Paciente.objects.filter(
+            Q(nome_paciente__icontains=query) | 
+            Q(cpf__icontains=query) |
+            Q(cpf__icontains=clean_query)
+        )
+    else:
+        pacientes = Paciente.objects.all()
+    
+    return render(request, 'clinica/buscar_paciente.html', {'pacientes': pacientes})
 
 @login_required
 def home(request):
@@ -27,4 +44,3 @@ def home(request):
     }
 
     return render(request, 'clinica/home.html', contexto)
-
