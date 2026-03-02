@@ -1,0 +1,4 @@
+total_pacientes = Paciente.objects.count()
+total_medicos = Medico.objects.count()
+consultas_hoje = Consulta.objects.filter(data_hora=datetime.date.today()).count()
+
