@@ -64,7 +64,8 @@ class Consulta(models.Model):
         db_table = 'consulta'
 
     def __str__(self):
-        return f"Consulta {self.id_consulta} - {self.data_hora}"
+        paciente = self.cpf_paciente.nome_paciente if self.cpf_paciente else "Sem paciente"
+        return f"{paciente} - {self.data_hora}"
 
 class Prontuario(models.Model):
     # O Django OBRIGA todo model a ter uma primary_key.
