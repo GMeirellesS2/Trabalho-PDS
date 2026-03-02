@@ -11,13 +11,14 @@ def index(request):
 @login_required
 def home(request):
     pacientes = Paciente.objects.all()
-    
-    # Verifica se existe um médico com o nome de utilizador atual
-    is_medico = Medico.objects.filter(usuario_medico=request.user.username).exists()
+
+    # agora correto
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
 
     contexto = {
         'lista_pacientes': pacientes,
         'is_medico': is_medico,
     }
+
     return render(request, 'clinica/home.html', contexto)
 
