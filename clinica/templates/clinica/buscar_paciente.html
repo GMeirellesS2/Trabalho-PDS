@@ -1,0 +1,5 @@
+query = request.GET.get('busca')
+if query:
+    pacientes = Paciente.objects.filter(nome_paciente__icontains=query)
+else:
+    pacientes = Paciente.objects.all()

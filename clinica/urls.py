@@ -7,4 +7,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('login/', auth_views.LoginView.as_view(template_name='clinica/login.html'), name='login'),
     path('home/', views.home, name='home'),
+    path('dashboard/', views.home, name='dashboard'),
+    path('buscar_paciente/', views.home, name='buscar_paciente'),
 ]

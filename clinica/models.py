@@ -7,7 +7,6 @@ def validar_cpf(valor):
         raise ValidationError("CPF deve conter exatamente 11 números\n")
 
 
-
 class Paciente(models.Model):
     cpf = models.CharField(primary_key=True, max_length=14, validators=[validar_cpf])
     nome_paciente = models.CharField(max_length=255, blank=True, null=True)
@@ -25,7 +24,7 @@ class Paciente(models.Model):
 class Medico(models.Model):
     crm = models.CharField(primary_key=True, max_length=20)
     # Aqui conectamos o médico ao usuário do Django (para ele fazer login)
-    usuario_medico = models.CharField(max_length=255, db_column='usuario_medico', blank=True, null=True)
+    usuario_medico = models.OneToOneField(User, on_delete=models.SET_NULL, db_column='usuario_medico', blank=True, null=True)
     especialidade = models.CharField(max_length=100, blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
     id_especialidade = models.ForeignKey('Especialidade', on_delete=models.DO_NOTHING, db_column='id_especialidade',blank=True,null=True)
@@ -39,11 +38,21 @@ class Medico(models.Model):
 
 class Consulta(models.Model):
     # Alterei DecimalField para AutoField (um ID padrão numérico) para evitar bugs visuais
+    AGENDADO = "Agendada"
+    CONCLUIDO = "Concluida"
+    CANCELADA = "Cancelada"
+
+    Consulta_Status = {
+        AGENDADO: "Agendada",
+        CONCLUIDO: "Concluida",
+        CANCELADA: "Cancelada"
+    }
+    
     id_consulta = models.AutoField(primary_key=True)
     data_hora = models.DateField(blank=True, null=True)
     crm_medico = models.ForeignKey(Medico, on_delete=models.DO_NOTHING, db_column='crm_medico', blank=True, null=True)
     cpf_paciente = models.ForeignKey(Paciente, on_delete=models.DO_NOTHING, db_column='cpf_paciente', blank=True, null=True)
-    status = models.CharField(max_length=50, blank=True, null=True)
+    status = models.CharField(max_length=9, choices = Consulta_Status, default = AGENDADO)
     created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
