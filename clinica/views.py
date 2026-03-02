@@ -13,14 +13,18 @@ def buscar_paciente(request):
     query = request.GET.get('busca')
     
     if query:
-        # Se o usuário digitar apenas os números do CPF (sem pontos/traços)
+        # Filtro base: Busca pelo nome exato ou pelo que foi digitado no CPF
+        filtros = Q(nome_paciente__icontains=query) | Q(cpf__icontains=query)
+        
+        # Tenta extrair apenas os números (caso o usuário tenha digitado um CPF com pontos)
         clean_query = ''.join(filter(str.isdigit, query))
         
-        pacientes = Paciente.objects.filter(
-            Q(nome_paciente__icontains=query) | 
-            Q(cpf__icontains=query) |
-            Q(cpf__icontains=clean_query)
-        )
+        # Só adiciona a regra do CPF limpo se a pessoa digitou algum número!
+        if clean_query:
+            filtros |= Q(cpf__icontains=clean_query)
+            
+        # Aplica os filtros construídos
+        pacientes = Paciente.objects.filter(filtros)
     else:
         pacientes = Paciente.objects.all()
     
