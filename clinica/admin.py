@@ -22,7 +22,7 @@ class ConsultaAdmin(admin.ModelAdmin):
 
 @admin.register(Prontuario)
 class ProntuarioAdmin(admin.ModelAdmin):
-    list_display = ('id_consulta_pront', 'data_registro', 'crm_medico_pront', 'cpf_paciente_pront')
+    list_display = ('consulta', 'data_registro', 'crm_medico_pront', 'cpf_paciente_pront')
     list_filter = ('data_registro',)
 
 @admin.register(Recepcionista)

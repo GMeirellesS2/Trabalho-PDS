@@ -70,7 +70,7 @@ class Consulta(models.Model):
 class Prontuario(models.Model):
     # O Django OBRIGA todo model a ter uma primary_key.
     # Como não tinha nenhuma, coloquei a id_consulta_pront como Chave Primária por enquanto.
-    id_consulta_pront = models.OneToOneField(Consulta, on_delete=models.DO_NOTHING, db_column='id_consulta_pront', primary_key=True)
+    consulta = models.OneToOneField(Consulta,on_delete=models.DO_NOTHING,db_column='id_consulta_pront',  primary_key=True)    
     crm_medico_pront = models.ForeignKey(Medico, on_delete=models.DO_NOTHING, db_column='crm_medico_pront', blank=True, null=True)
     cpf_paciente_pront = models.ForeignKey(Paciente, on_delete=models.DO_NOTHING, db_column='cpf_paciente_pront', blank=True, null=True)
     historico_clinico = models.TextField(blank=True, null=True)
