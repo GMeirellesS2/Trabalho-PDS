@@ -10,6 +10,10 @@ def index(request):
 
 @login_required
 def buscar_paciente(request):
+    # Verifica o tipo de usuário logado
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
     query = request.GET.get('busca')
     
     if query:
@@ -28,7 +32,13 @@ def buscar_paciente(request):
     else:
         pacientes = Paciente.objects.all()
     
-    return render(request, 'clinica/buscar_paciente.html', {'pacientes': pacientes})
+    contexto = {
+        'pacientes': pacientes,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista,
+    }
+    
+    return render(request, 'clinica/buscar_paciente.html', contexto)
 
 @login_required
 def home(request):
@@ -36,15 +46,47 @@ def home(request):
     total_pacientes = Paciente.objects.count()
     total_medicos = Medico.objects.count()
     total_consultas = Consulta.objects.count()
-    # agora correto
+    
+    # Verifica o tipo de usuário logado
     is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
 
     contexto = {
         'lista_pacientes': pacientes,
         'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista,
         'total_pacientes': total_pacientes,
         'total_medicos': total_medicos,
         'total_consultas': total_consultas,
     }
 
     return render(request, 'clinica/home.html', contexto)
+
+@login_required
+def buscar_medico(request):
+    # Verifica o tipo de usuário logado para a sidebar
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    query = request.GET.get('busca')
+    
+    if query:
+        # Busca por CRM, Nome de usuário, ou Nome da Especialidade
+        filtros = (
+            Q(crm__icontains=query) | 
+            Q(usuario_medico__username__icontains=query) |
+            Q(usuario_medico__first_name__icontains=query) |
+            Q(id_especialidade__nome__icontains=query)
+        )
+        # select_related deixa a busca no banco muito mais rápida
+        medicos = Medico.objects.filter(filtros).select_related('usuario_medico', 'id_especialidade')
+    else:
+        medicos = Medico.objects.all().select_related('usuario_medico', 'id_especialidade')
+    
+    contexto = {
+        'medicos': medicos,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista,
+    }
+    
+    return render(request, 'clinica/buscar_medico.html', contexto)
