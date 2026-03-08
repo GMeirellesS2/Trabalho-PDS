@@ -1,42 +1,53 @@
-<h2>Lista de Pacientes</h2>
+{% extends 'clinica/base.html' %}
 
-<a href="{% url 'paciente_criar' %}">
-<button>Novo Paciente</button>
-</a>
+{% block title %}Lista de Pacientes{% endblock %}
 
-<br><br>
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📋 Lista de Pacientes</h4>
+            <a href="{% url 'paciente_criar' %}" class="btn btn-light btn-sm fw-bold text-primary">
+                ➕ Novo Paciente
+            </a>
+        </div>
+        <div class="card-body">
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>CPF</th>
+                            <th>Nome do Paciente</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paciente in pacientes %}
+                        <tr>
+                            <td class="fw-bold">{{ paciente.cpf }}</td>
+                            <td>{{ paciente.nome_paciente }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'paciente_editar' paciente.cpf %}" class="btn btn-sm btn-outline-primary">
+                                    ✏️ Editar
+                                </a>
+                                <a href="{% url 'paciente_excluir' paciente.cpf %}" class="btn btn-sm btn-outline-danger ms-1">
+                                    🗑️ Excluir
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-4">
+                                Nenhum paciente cadastrado no sistema.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-<table border="1">
-
-<tr>
-<th>CPF</th>
-<th>Nome</th>
-<th>Ações</th>
-</tr>
-
-{% for paciente in pacientes %}
-
-<tr>
-
-<td>{{ paciente.cpf }}</td>
-<td>{{ paciente.nome_paciente }}</td>
-
-<td>
-
-<a href="{% url 'paciente_editar' paciente.cpf %}">
-Editar
-</a>
-
-|
-
-<a href="{% url 'paciente_excluir' paciente.cpf %}">
-Excluir
-</a>
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
+        </div>
+    </div>
+</div>
+{% endblock %}
