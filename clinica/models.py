@@ -45,7 +45,7 @@ class Consulta(models.Model):
     AGENDADO = "Agendada"
     CONCLUIDO = "Concluida"
     CANCELADA = "Cancelada"
-
+    # o erro estava na conexão com models e com o banco
     Consulta_Status = [
         (AGENDADO, "Agendada"),
         (CONCLUIDO, "Concluída"),
