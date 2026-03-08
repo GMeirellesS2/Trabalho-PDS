@@ -12,4 +12,5 @@ urlpatterns = [
     path('buscar_medico/', views.buscar_medico, name='buscar_medico'),
     path('sair/', views.sair, name='logout'),
     path('novo_paciente/', views.novo_paciente, name='novo_paciente'),
+    path('agendar_consulta/', views.agendar_consulta, name='agendar_consulta'),
 ]

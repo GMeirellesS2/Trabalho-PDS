@@ -7,6 +7,7 @@ from .models import Paciente, Medico, Consulta
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.db import IntegrityError
+from django.utils import timezone
 
 def index(request):
     return render(request, 'clinica/index.html')
@@ -136,3 +137,49 @@ def novo_paciente(request):
     # Se for GET, apenas renderiza o formulário vazio
     contexto = {'is_medico': is_medico, 'is_recepcionista': is_recepcionista}
     return render(request, 'clinica/novo_paciente.html', contexto)
+
+@login_required
+def agendar_consulta(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    if request.method == 'POST':
+        cpf_paciente = request.POST.get('paciente')
+        crm_medico = request.POST.get('medico')
+        data_consulta = request.POST.get('data_hora')
+
+        try:
+            # Vai buscar as instâncias do Paciente e do Médico à base de dados
+            paciente = Paciente.objects.get(cpf=cpf_paciente)
+            medico = Medico.objects.get(crm=crm_medico)
+
+            # Cria o registo da consulta
+            Consulta.objects.create(
+                cpf_paciente=paciente,
+                crm_medico=medico,
+                data_hora=data_consulta,
+                status=Consulta.AGENDADO,
+                created_at=timezone.now()
+            )
+            # Reencaminha para o dashboard após agendar com sucesso
+            return redirect('dashboard')
+            
+        except Exception as e:
+            erro = f"Erro ao agendar a consulta: {str(e)}"
+            # Em caso de erro, volta a carregar a página com as listas
+            pacientes = Paciente.objects.all().order_by('nome_paciente')
+            medicos = Medico.objects.select_related('usuario_medico', 'id_especialidade').all()
+            contexto = {'erro': erro, 'pacientes': pacientes, 'medicos': medicos, 'is_medico': is_medico, 'is_recepcionista': is_recepcionista}
+            return render(request, 'clinica/agendar_consulta.html', contexto)
+
+    # Se for um pedido GET (apenas a abrir o ecrã)
+    pacientes = Paciente.objects.all().order_by('nome_paciente')
+    medicos = Medico.objects.select_related('usuario_medico', 'id_especialidade').all()
+    
+    contexto = {
+        'pacientes': pacientes,
+        'medicos': medicos,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/agendar_consulta.html', contexto)
