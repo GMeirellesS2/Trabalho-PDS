@@ -46,14 +46,14 @@ class Consulta(models.Model):
     CONCLUIDO = "Concluida"
     CANCELADA = "Cancelada"
 
-    Consulta_Status = {
-        AGENDADO: "Agendada",
-        CONCLUIDO: "Concluida",
-        CANCELADA: "Cancelada"
-    }
+    Consulta_Status = [
+        (AGENDADO, "Agendada"),
+        (CONCLUIDO, "Concluída"),
+        (CANCELADA, "Cancelada"),
+    ]
     
     id_consulta = models.AutoField(primary_key=True)
-    data_hora = models.DateField(blank=True, null=True)
+    data_hora = models.DateTimeField(blank=True, null=True)
     crm_medico = models.ForeignKey(Medico, on_delete=models.DO_NOTHING, db_column='crm_medico', blank=True, null=True)
     cpf_paciente = models.ForeignKey(Paciente, on_delete=models.DO_NOTHING, db_column='cpf_paciente', blank=True, null=True)
     status = models.CharField(max_length=9, choices = Consulta_Status, default = AGENDADO)
