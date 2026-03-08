@@ -1,6 +1,6 @@
 # Trabalho-PDS/clinica/views.py
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Paciente, Medico, Consulta
@@ -9,6 +9,8 @@ from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.utils import timezone
 from datetime import date, timedelta
+from .forms import PacienteForm
+
 
 def index(request):
     return render(request, 'clinica/index.html')
@@ -298,4 +300,54 @@ def consultas_medico(request):
         
     return render(request, 'clinica/consultas_medico.html', contexto)
 
-    
+
+
+
+# LISTAR PACIENTES
+def paciente_listar(request):
+
+    pacientes = Paciente.objects.all()
+
+    contexto = {
+        'pacientes': pacientes
+    }
+
+    return render(request, 'clinica/paciente_listar.html', contexto)
+
+
+# CRIAR PACIENTE
+def paciente_criar(request):
+
+    form = PacienteForm(request.POST or None)
+
+    if form.is_valid():
+        form.save()
+        return redirect('paciente_listar')
+
+    return render(request, 'clinica/paciente_form.html', {'form': form})
+
+
+# EDITAR PACIENTE
+def paciente_editar(request, cpf):
+
+    paciente = get_object_or_404(Paciente, pk=cpf)
+
+    form = PacienteForm(request.POST or None, instance=paciente)
+
+    if form.is_valid():
+        form.save()
+        return redirect('paciente_listar')
+
+    return render(request, 'clinica/paciente_form.html', {'form': form})
+
+
+# EXCLUIR PACIENTE
+def paciente_excluir(request, cpf):
+
+    paciente = get_object_or_404(Paciente, pk=cpf)
+
+    if request.method == "POST":
+        paciente.delete()
+        return redirect('paciente_listar')
+
+    return render(request, 'clinica/paciente_delete.html', {'paciente': paciente})

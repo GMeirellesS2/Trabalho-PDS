@@ -1,0 +1,42 @@
+<h2>Lista de Pacientes</h2>
+
+<a href="{% url 'paciente_criar' %}">
+<button>Novo Paciente</button>
+</a>
+
+<br><br>
+
+<table border="1">
+
+<tr>
+<th>CPF</th>
+<th>Nome</th>
+<th>Ações</th>
+</tr>
+
+{% for paciente in pacientes %}
+
+<tr>
+
+<td>{{ paciente.cpf }}</td>
+<td>{{ paciente.nome_paciente }}</td>
+
+<td>
+
+<a href="{% url 'paciente_editar' paciente.cpf %}">
+Editar
+</a>
+
+|
+
+<a href="{% url 'paciente_excluir' paciente.cpf %}">
+Excluir
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>

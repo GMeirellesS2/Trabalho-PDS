@@ -15,4 +15,9 @@ urlpatterns = [
     path('agendar_consulta/', views.agendar_consulta, name='agendar_consulta'),
     path('meus_pacientes/', views.meus_pacientes, name='meus_pacientes'),
     path('consultas/', views.consultas_medico, name='consultas_medico'),
+    path('pacientes/', views.paciente_listar, name='paciente_listar'),
+    path('pacientes/criar/', views.paciente_criar, name='paciente_criar'),
+    path('pacientes/editar/<str:cpf>/', views.paciente_editar, name='paciente_editar'),
+    path('pacientes/excluir/<str:cpf>/', views.paciente_excluir, name='paciente_excluir'),
+
 ]
