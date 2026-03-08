@@ -183,3 +183,35 @@ def agendar_consulta(request):
         'is_recepcionista': is_recepcionista
     }
     return render(request, 'clinica/agendar_consulta.html', contexto)
+
+@login_required
+def meus_pacientes(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    # Proteção: Se não for médico, manda de volta para o dashboard
+    if not is_medico:
+        return redirect('dashboard')
+
+    # Descobre quem é o médico logado
+    medico_logado = Medico.objects.get(usuario_medico=request.user)
+    
+    # Busca pacientes que têm consultas com ESTE médico (e usa distinct para não repetir o paciente se ele tiver 5 consultas)
+    pacientes = Paciente.objects.filter(consulta__crm_medico=medico_logado).distinct()
+
+    # Mantemos o sistema de busca inteligente para o médico também
+    query = request.GET.get('busca')
+    if query:
+        filtros = Q(nome_paciente__icontains=query) | Q(cpf__icontains=query)
+        clean_query = ''.join(filter(str.isdigit, query))
+        if clean_query:
+            filtros |= Q(cpf__icontains=clean_query)
+        pacientes = pacientes.filter(filtros)
+    
+    contexto = {
+        'pacientes': pacientes,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista,
+    }
+    
+    return render(request, 'clinica/meus_pacientes.html', contexto)

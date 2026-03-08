@@ -25,12 +25,12 @@
         {% if is_recepcionista %}
             <a href="{% url 'buscar_paciente' %}">🔍 Buscar Paciente</a>
             <a href="{% url 'buscar_medico' %}">👨‍⚕️ Buscar Médico</a> 
-            <a href="agendar_consulta/">📅 Agendar Consulta</a>
+            <a href="/agendar_consulta/">📅 Agendar Consulta</a>
             <a href="/novo_paciente/">➕ Novo Paciente</a>
         {% endif %}
 
         {% if is_medico %}
-            <a href="#">🩺 Meus Pacientes</a>
+            <a href="/meus_pacientes/">🩺 Meus Pacientes</a>
             <a href="#">📝 Consultas do Dia</a>
         {% endif %}
 
