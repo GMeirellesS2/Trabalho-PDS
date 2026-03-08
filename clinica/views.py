@@ -6,6 +6,7 @@ from django.db.models import Q
 from .models import Paciente, Medico, Consulta
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.db import IntegrityError
 
 def index(request):
     return render(request, 'clinica/index.html')
@@ -96,3 +97,42 @@ def buscar_medico(request):
 def sair(request):
     logout(request) # Encerra a sessão do usuário
     return redirect('login') # Manda ele de volta para a tela de login
+
+@login_required
+def novo_paciente(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    if request.method == 'POST':
+        cpf = request.POST.get('cpf')
+        nome = request.POST.get('nome_paciente')
+        data_nasc = request.POST.get('data_nasc')
+        email = request.POST.get('email')
+        convenio = request.POST.get('convenio')
+
+        try:
+            # Remove pontos e traços do CPF antes de salvar
+            cpf_limpo = ''.join(filter(str.isdigit, cpf))
+            
+            Paciente.objects.create(
+                cpf=cpf_limpo,
+                nome_paciente=nome,
+                data_nasc=data_nasc if data_nasc else None, # Evita erro se a data vier vazia
+                email=email,
+                convenio=convenio
+            )
+            # Se salvar com sucesso, redireciona para a lista de pacientes
+            return redirect('buscar_paciente')
+            
+        except IntegrityError:
+            erro = "Já existe um paciente cadastrado com este CPF."
+            contexto = {'erro': erro, 'is_medico': is_medico, 'is_recepcionista': is_recepcionista}
+            return render(request, 'clinica/novo_paciente.html', contexto)
+        except Exception as e:
+            erro = f"Erro ao cadastrar: {str(e)}"
+            contexto = {'erro': erro, 'is_medico': is_medico, 'is_recepcionista': is_recepcionista}
+            return render(request, 'clinica/novo_paciente.html', contexto)
+
+    # Se for GET, apenas renderiza o formulário vazio
+    contexto = {'is_medico': is_medico, 'is_recepcionista': is_recepcionista}
+    return render(request, 'clinica/novo_paciente.html', contexto)
