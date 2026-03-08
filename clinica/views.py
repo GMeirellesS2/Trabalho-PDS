@@ -4,6 +4,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Paciente, Medico, Consulta
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 def index(request):
     return render(request, 'clinica/index.html')
@@ -90,3 +92,7 @@ def buscar_medico(request):
     }
     
     return render(request, 'clinica/buscar_medico.html', contexto)
+
+def sair(request):
+    logout(request) # Encerra a sessão do usuário
+    return redirect('login') # Manda ele de volta para a tela de login
