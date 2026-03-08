@@ -31,7 +31,7 @@
 
         {% if is_medico %}
             <a href="/meus_pacientes/">🩺 Meus Pacientes</a>
-            <a href="#">📝 Consultas do Dia</a>
+            <a href="{% url 'consultas_medico' %}">📝 Consultas do Dia</a>
         {% endif %}
 
         {% if request.user.is_superuser %}

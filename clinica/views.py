@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.utils import timezone
+from datetime import date, timedelta
 
 def index(request):
     return render(request, 'clinica/index.html')
@@ -215,3 +216,86 @@ def meus_pacientes(request):
     }
     
     return render(request, 'clinica/meus_pacientes.html', contexto)
+
+@login_required
+def consultas_medico(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    if not is_medico:
+        return redirect('dashboard')
+
+    medico_logado = Medico.objects.get(usuario_medico=request.user)
+    
+    # --- 1. LÓGICA DE SALVAR O PRONTUÁRIO (Quando o Médico clica em Salvar no Modal) ---
+    if request.method == 'POST':
+        id_consulta = request.POST.get('id_consulta')
+        try:
+            consulta = Consulta.objects.get(id_consulta=id_consulta, crm_medico=medico_logado)
+            
+            # Cria o Prontuário no banco de dados vinculando àquela consulta
+            from .models import Prontuario # Import local para garantir
+            Prontuario.objects.update_or_create(
+                id_consulta_pront=consulta,
+                defaults={
+                    'crm_medico_pront': medico_logado,
+                    'cpf_paciente_pront': consulta.cpf_paciente,
+                    'historico_clinico': request.POST.get('historico_clinico'),
+                    'exame_fisico': request.POST.get('exame_fisico'),
+                    'diagnostico': request.POST.get('diagnostico'),
+                    'prescricao': request.POST.get('prescricao'),
+                    'exames_solicitados': request.POST.get('exames_solicitados'),
+                    'data_registro': date.today()
+                }
+            )
+            
+            # Muda o status da consulta para "Concluída"
+            consulta.status = Consulta.CONCLUIDO
+            consulta.save()
+            return redirect('consultas_medico') # Recarrega a página
+            
+        except Exception as e:
+            # Se der erro, vamos enviar para a tela
+            contexto_erro = {'erro': f"Erro ao salvar: {str(e)}"}
+            # Não paramos o código aqui, deixamos ele carregar a lista de consultas abaixo
+    
+    # --- 2. LÓGICA DE FILTROS DA TELA (Hoje, Semana, Mês, Histórico) ---
+    filtro = request.GET.get('filtro', 'hoje') # Por padrão, mostra 'hoje'
+    hoje = date.today()
+    
+    # Busca base: todas as consultas deste médico
+    consultas = Consulta.objects.filter(crm_medico=medico_logado).select_related('cpf_paciente')
+    
+    if filtro == 'hoje':
+        consultas = consultas.filter(data_hora=hoje, status=Consulta.AGENDADO)
+    elif filtro == 'semana':
+        # Calcula o início e fim da semana atual
+        inicio_semana = hoje - timedelta(days=hoje.weekday())
+        fim_semana = inicio_semana + timedelta(days=6)
+        consultas = consultas.filter(data_hora__range=[inicio_semana, fim_semana], status=Consulta.AGENDADO)
+    elif filtro == 'mes':
+        consultas = consultas.filter(data_hora__year=hoje.year, data_hora__month=hoje.month, status=Consulta.AGENDADO)
+    elif filtro == 'historico':
+        # Traz apenas as consultas que já foram concluídas
+        consultas = consultas.filter(status=Consulta.CONCLUIDO).order_by('-data_hora')
+    elif filtro == 'todas':
+        consultas = consultas.filter(status=Consulta.AGENDADO)
+        
+    # Ordena para a data mais próxima aparecer primeiro (exceto no histórico)
+    if filtro != 'historico':
+        consultas = consultas.order_by('data_hora')
+
+    contexto = {
+        'consultas': consultas,
+        'filtro_atual': filtro,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista,
+    }
+    
+    # Se ocorreu um erro no POST, injetamos ele no contexto
+    if 'contexto_erro' in locals():
+        contexto.update(contexto_erro)
+        
+    return render(request, 'clinica/consultas_medico.html', contexto)
+
+    
