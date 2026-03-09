@@ -19,5 +19,7 @@ urlpatterns = [
     path('pacientes/criar/', views.paciente_criar, name='paciente_criar'),
     path('pacientes/editar/<str:cpf>/', views.paciente_editar, name='paciente_editar'),
     path('pacientes/excluir/<str:cpf>/', views.paciente_excluir, name='paciente_excluir'),
-
+    path('remarcar_consulta/', views.remarcar_consulta, name='remarcar_consultas'),
+    path('cancelar_consulta/', views.cancelar_consulta, name='cancelar_consulta'),
+    
 ]

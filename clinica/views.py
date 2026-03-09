@@ -142,6 +142,85 @@ def novo_paciente(request):
     return render(request, 'clinica/novo_paciente.html', contexto)
 
 @login_required
+def remarcar_consulta(request):
+
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    consulta = None
+    erro = None
+
+    if request.method == 'POST':
+
+        id_consulta = request.POST.get('id_consulta')
+        nova_data = request.POST.get('nova_data')
+
+        try:
+            consulta = Consulta.objects.get(id_consulta=id_consulta)
+
+            # Se o formulário enviou nova data -> atualizar
+            if nova_data:
+                consulta.data_hora = nova_data
+                consulta.save()
+                return redirect('dashboard')
+
+        except Consulta.DoesNotExist:
+            erro = "Consulta não encontrada."
+
+        except Exception as e:
+            erro = f"Erro ao remarcar consulta: {str(e)}"
+
+    contexto = {
+        'consulta': consulta,
+        'erro': erro,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+
+    return render(request, 'clinica/remarcar_consulta.html', contexto)
+
+@login_required
+def cancelar_consulta(request):
+
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    consulta = None
+    erro = None
+
+    if request.method == 'POST':
+
+        id_consulta = request.POST.get('id_consulta')
+        confirmar = request.POST.get('confirmar_cancelamento')
+
+        try:
+            consulta = Consulta.objects.select_related(
+                'cpf_paciente',
+                'crm_medico',
+                'crm_medico__usuario_medico'
+            ).get(id_consulta=id_consulta)
+
+            # Se clicou em confirmar cancelamento
+            if confirmar:
+                consulta.delete()
+                return redirect('dashboard')
+
+        except Consulta.DoesNotExist:
+            erro = "Consulta não encontrada."
+
+        except Exception as e:
+            erro = f"Erro ao cancelar consulta: {str(e)}"
+
+    contexto = {
+        'consulta': consulta,
+        'erro': erro,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+
+    return render(request, 'clinica/cancelar_consulta.html', contexto)
+
+@login_required
 def agendar_consulta(request):
     is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
     is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
