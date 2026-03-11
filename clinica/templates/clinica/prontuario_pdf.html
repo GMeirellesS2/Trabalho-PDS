@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Prontuário - {{ paciente.nome_paciente }}</title>
+    <style>
+        /* Configurações da página (tamanho, margem e rodapé automático) */
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 1cm;
+                margin-left: 2cm;
+                margin-right: 2cm;
+                height: 1cm;
+                text-align: right;
+                font-size: 10px;
+                color: #7f8c8d;
+            }
+        }
+
+        /* Reset básico e tipografia */
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+
+        /* Cabeçalho do Documento */
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        /* Dados do Paciente */
+        .patient-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin-bottom: 30px;
+        }
+        .patient-info table {
+            width: 100%;
+        }
+        .patient-info th {
+            text-align: left;
+            width: 130px;
+            color: #2c3e50;
+        }
+
+        /* Cards de cada Prontuário */
+        .prontuario-card {
+            border: 1px solid #bdc3c7;
+            margin-bottom: 20px;
+            /* Evita que um atendimento seja cortado no meio pela quebra de página */
+            page-break-inside: avoid;
+        }
+        .prontuario-header {
+            background-color: #34495e;
+            color: white;
+            padding: 8px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .prontuario-body {
+            padding: 10px;
+        }
+
+        /* Tópicos dentro do prontuário (Diagnóstico, Exame, etc) */
+        .section-title {
+            font-weight: bold;
+            color: #2980b9;
+            margin-top: 10px;
+            margin-bottom: 3px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .section-content {
+            background-color: #ffffff;
+            border: 1px dashed #bdc3c7;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="footerContent">
+        Página <pdf:pagenumber> de <pdf:pagecount>
+    </div>
+
+    <div class="header">
+        <h1>Sistema Integrado de Clínicas</h1>
+        <h3>Histórico Clínico do Paciente</h3>
+    </div>
+
+    <div class="patient-info">
+        <table>
+            <tr>
+                <th>Paciente:</th>
+                <td><strong>{{ paciente.nome_paciente }}</strong></td>
+            </tr>
+            <tr>
+                <th>CPF:</th>
+                <td>{{ paciente.cpf }}</td>
+            </tr>
+            <tr>
+                <th>Data de Nascimento:</th>
+                <td>{{ paciente.data_nasc|date:"d/m/Y"|default:"Não informada" }}</td>
+            </tr>
+            <tr>
+                <th>Convênio:</th>
+                <td>{{ paciente.convenio|default:"Particular" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    {% for prontuario in prontuarios %}
+    <div class="prontuario-card">
+        <div class="prontuario-header">
+            Data do Atendimento: {{ prontuario.data_registro|date:"d/m/Y" }} |
+            Médico: Dr(a). {{ prontuario.crm_medico_pront.usuario_medico.first_name|default:prontuario.crm_medico_pront.usuario_medico.username }}
+        </div>
+        <div class="prontuario-body">
+
+            <div class="section-title">Histórico Clínico (Anamnese)</div>
+            <div class="section-content">{{ prontuario.historico_clinico|default:"-"|linebreaksbr }}</div>
+
+            <div class="section-title">Exame Físico</div>
+            <div class="section-content">{{ prontuario.exame_fisico|default:"-"|linebreaksbr }}</div>
+
+            <div class="section-title">Diagnóstico</div>
+            <div class="section-content">{{ prontuario.diagnostico|default:"-"|linebreaksbr }}</div>
+
+            <div class="section-title">Prescrição Médica</div>
+            <div class="section-content">{{ prontuario.prescricao|default:"-"|linebreaksbr }}</div>
+
+            <div class="section-title">Exames Solicitados</div>
+            <div class="section-content">{{ prontuario.exames_solicitados|default:"-"|linebreaksbr }}</div>
+
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center" style="color: #7f8c8d; margin-top: 50px;">
+        Nenhum registro de atendimento concluído foi encontrado para este paciente.
+    </p>
+    {% endfor %}
+
+</body>
+</html>

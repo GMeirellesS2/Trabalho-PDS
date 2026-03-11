@@ -1,0 +1,69 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Prontuário - {{ paciente.nome_paciente }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Histórico Clínico: {{ paciente.nome_paciente }}</h2>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'exportar_prontuario_pdf' paciente.cpf %}" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </a>
+            <a href="{% url 'meus_pacientes' %}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Dados do Paciente</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>CPF:</strong> {{ paciente.cpf }}</p>
+            <p><strong>Data de Nascimento:</strong> {{ paciente.data_nasc|date:"d/m/Y"|default:"Não informada" }}</p>
+            <p><strong>Convênio:</strong> {{ paciente.convenio|default:"Particular" }}</p>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Registros de Consultas</h4>
+
+    {% for prontuario in prontuarios %}
+    <div class="card shadow-sm mb-4 border-left-primary">
+        <div class="card-header bg-light d-flex justify-content-between">
+            <strong>Data do Atendimento: {{ prontuario.data_registro|date:"d/m/Y" }}</strong>
+            <span class="text-muted">Médico: Dr(a). {{ prontuario.crm_medico_pront.usuario_medico.first_name|default:prontuario.crm_medico_pront.usuario_medico.username }}</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6 class="fw-bold text-primary">Histórico Clínico (Anamnese)</h6>
+                    <p class="border p-2 rounded bg-light">{{ prontuario.historico_clinico|default:"-"|linebreaksbr }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="fw-bold text-primary">Exame Físico</h6>
+                    <p class="border p-2 rounded bg-light">{{ prontuario.exame_fisico|default:"-"|linebreaksbr }}</p>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <h6 class="fw-bold text-danger">Diagnóstico</h6>
+                    <p class="border p-2 rounded bg-light">{{ prontuario.diagnostico|default:"-"|linebreaksbr }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="fw-bold text-success">Prescrição</h6>
+                    <p class="border p-2 rounded bg-light">{{ prontuario.prescricao|default:"-"|linebreaksbr }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="fw-bold text-warning">Exames Solicitados</h6>
+                    <p class="border p-2 rounded bg-light">{{ prontuario.exames_solicitados|default:"-"|linebreaksbr }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-warning">
+        Nenhum registro de prontuário encontrado para este paciente até o momento.
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

@@ -3,17 +3,72 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from .models import Paciente, Medico, Consulta
+from .models import Paciente, Medico, Consulta, Prontuario
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.utils import timezone
 from datetime import date, timedelta
 from .forms import PacienteForm
-
+from xhtml2pdf import pisa
+from django.http import HttpResponse
+from django.template.loader import get_template
 
 def index(request):
     return render(request, 'clinica/index.html')
+
+
+@login_required
+def exportar_prontuario_pdf(request, cpf):
+    paciente = get_object_or_404(Paciente, cpf=cpf)
+    prontuarios = Prontuario.objects.filter(cpf_paciente_pront=paciente).select_related(
+        'crm_medico_pront', 'crm_medico_pront__usuario_medico'
+    ).order_by('-data_registro')
+
+    contexto = {'paciente': paciente, 'prontuarios': prontuarios}
+
+    # 1. Pegamos o template HTML
+    template = get_template('clinica/prontuario_pdf.html')
+    html = template.render(contexto)
+
+    # 2. Criamos a resposta HTTP informando que é um PDF
+    response = HttpResponse(content_type='application/pdf')
+    # O "attachment" faz o download direto. Se quiser que abra no navegador, mude para "inline"
+    response['Content-Disposition'] = f'attachment; filename="prontuario_{paciente.cpf}.pdf"'
+
+    # 3. Geramos o PDF com o xhtml2pdf
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Erro ao gerar o PDF', status=500)
+
+    return response
+
+
+@login_required
+def agenda_medico(request, crm):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    # Busca o médico
+    medico = get_object_or_404(Medico, crm=crm)
+
+    # Busca as consultas filtrando pelo médico e status AGENDADO, ordenando pela data
+    consultas = Consulta.objects.filter(
+        crm_medico=medico,
+        status=Consulta.AGENDADO
+    ).select_related('cpf_paciente').order_by('data_hora')
+
+    contexto = {
+        'medico': medico,
+        'consultas': consultas,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista,
+    }
+
+    return render(request, 'clinica/agenda_medico.html', contexto)
+
+
 
 @login_required
 def buscar_paciente(request):
@@ -317,7 +372,7 @@ def consultas_medico(request):
             # Cria o Prontuário no banco de dados vinculando àquela consulta
             from .models import Prontuario # Import local para garantir
             Prontuario.objects.update_or_create(
-                id_consulta_pront=consulta,
+                consulta=consulta,
                 defaults={
                     'crm_medico_pront': medico_logado,
                     'cpf_paciente_pront': consulta.cpf_paciente,
@@ -380,7 +435,30 @@ def consultas_medico(request):
     return render(request, 'clinica/consultas_medico.html', contexto)
 
 
+@login_required
+def prontuario_paciente(request, cpf):
+    # Verifica o tipo de usuário para a sidebar
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
 
+    # Busca o paciente pelo CPF ou retorna erro 404 se não achar
+    paciente = get_object_or_404(Paciente, cpf=cpf)
+
+    # Busca todos os prontuários desse paciente, ordenando do mais recente para o mais antigo
+    prontuarios = Prontuario.objects.filter(cpf_paciente_pront=paciente).select_related(
+        'consulta',
+        'crm_medico_pront',
+        'crm_medico_pront__usuario_medico'
+    ).order_by('-data_registro')
+
+    contexto = {
+        'paciente': paciente,
+        'prontuarios': prontuarios,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista,
+    }
+
+    return render(request, 'clinica/prontuario_paciente.html', contexto)
 
 # LISTAR PACIENTES
 def paciente_listar(request):

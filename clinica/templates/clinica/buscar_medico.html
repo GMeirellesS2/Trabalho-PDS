@@ -63,7 +63,7 @@
                             <td>{{ medico.telefone|default:"-" }}</td>
                             
                             <td>
-                                <a href="#" class="btn btn-sm btn-outline-success">Ver Agenda</a>
+                                <a href="{% url 'agenda_medico' medico.crm %}" class="btn btn-sm btn-outline-success">Ver Agenda</a>
                             </td>
                         </tr>
                         {% empty %}

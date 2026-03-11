@@ -40,7 +40,8 @@
                             <td class="fw-bold">{{ paciente.nome_paciente }}</td>
                             <td>{{ paciente.data_nasc|date:"d/m/Y" }}</td>
                             <td>
-                                <a href="#" class="btn btn-sm btn-primary">Abrir Prontuário</a>
+                                <a href="{% url 'prontuario_paciente' paciente.cpf %}" class="btn btn-sm btn-primary">Abrir Prontuário</a>
+
                             </td>
                         </tr>
                         {% empty %}

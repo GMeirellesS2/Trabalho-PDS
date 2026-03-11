@@ -12,6 +12,10 @@ urlpatterns = [
     path('buscar_medico/', views.buscar_medico, name='buscar_medico'),
     path('sair/', views.sair, name='logout'),
     path('novo_paciente/', views.novo_paciente, name='novo_paciente'),
+    path('paciente/<str:cpf>/prontuario/', views.prontuario_paciente, name='prontuario_paciente'),
+    path('medico/<path:crm>/agenda/', views.agenda_medico, name='agenda_medico'),
+
+    path('paciente/<str:cpf>/prontuario/pdf/', views.exportar_prontuario_pdf, name='exportar_prontuario_pdf'),
     path('agendar_consulta/', views.agendar_consulta, name='agendar_consulta'),
     path('meus_pacientes/', views.meus_pacientes, name='meus_pacientes'),
     path('consultas/', views.consultas_medico, name='consultas_medico'),
