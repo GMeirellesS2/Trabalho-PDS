@@ -10,6 +10,12 @@ class PacienteForm(forms.ModelForm):
         #
 
 class MedicoForm(forms.ModelForm):
+    # Campos virtuais (não estão no Medico, mas usaremos para criar o User do Django)
+    username = forms.CharField(max_length=150, required=True, label="Nome de Usuário (Login)")
+    password = forms.CharField(widget=forms.PasswordInput, required=True, label="Senha")
+    email = forms.EmailField(required=False, label="E-mail")
+
     class Meta:
         model = Medico
-        fields = ['crm', 'usuario_medico', 'telefone', 'id_especialidade']
+        # Tiramos o 'usuario_medico' e colocamos o 'nome'
+        fields = ['crm', 'nome', 'telefone', 'id_especialidade']

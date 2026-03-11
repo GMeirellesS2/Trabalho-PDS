@@ -13,6 +13,8 @@ from .forms import PacienteForm, MedicoForm
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from django.template.loader import get_template
+from django.contrib.auth.models import User, Group
+from django.db import transaction
 
 def index(request):
     return render(request, 'clinica/index.html')
@@ -570,23 +572,42 @@ def medico_listar(request):
     }
     return render(request, 'clinica/medico_listar.html', contexto)
 
+
 @login_required
 def medico_criar(request):
-    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
-    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+    if request.method == 'POST':
+        form = MedicoForm(request.POST)
+        if form.is_valid():
+            try:
+                # O "atomic" garante que se der erro no meio, ele cancela TUDO e não cria nada pela metade
+                with transaction.atomic():
+                    # 1. Cria o Usuário base do Django
+                    user = User.objects.create_user(
+                        username=form.cleaned_data['username'],
+                        password=form.cleaned_data['password'],
+                        email=form.cleaned_data['email'],
+                        first_name=form.cleaned_data['nome']  # Já salva o nome de primeira no User também
+                    )
 
-    form = MedicoForm(request.POST or None)
+                    # 2. Busca o grupo 'Médicos' e adiciona o usuário lá
+                    # (Se o grupo não existir no banco, ele cria sozinho na hora)
+                    grupo_medicos, created = Group.objects.get_or_create(name='Médicos')
+                    user.groups.add(grupo_medicos)
 
-    if form.is_valid():
-        form.save()
-        return redirect('medico_listar')
+                    # 3. Prepara o Médico, vincula o usuário recém-criado e salva
+                    medico = form.save(commit=False)
+                    medico.usuario_medico = user
+                    medico.save()
 
-    contexto = {
-        'form': form,
-        'is_medico': is_medico,
-        'is_recepcionista': is_recepcionista
-    }
-    return render(request, 'clinica/medico_form.html', contexto)
+                    return redirect('medico_listar')  # Troque para a URL correta da sua lista
+
+            except Exception as e:
+                # Se algo der errado (ex: username já existe), joga o erro na tela
+                form.add_error(None, f"Erro ao salvar: {str(e)}")
+    else:
+        form = MedicoForm()
+
+    return render(request, 'clinica/medico_form.html', {'form': form})
 
 @login_required
 def medico_editar(request, crm):

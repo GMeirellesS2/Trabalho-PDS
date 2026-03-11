@@ -25,17 +25,18 @@
             <form method="POST">
                 {% csrf_token %}
                 
+                <h5 class="text-secondary border-bottom pb-2 mb-3">Dados Pessoais e Profissionais</h5>
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label fw-bold">CRM *</label>
                         {{ form.crm }}
                         <div class="text-danger small">{{ form.crm.errors }}</div>
                     </div>
-                    
+
                     <div class="col-md-8">
-                        <label class="form-label fw-bold">Usuário do Sistema (Login) *</label>
-                        {{ form.usuario_medico }}
-                        <div class="text-danger small">{{ form.usuario_medico.errors }}</div>
+                        <label class="form-label fw-bold">Nome Completo *</label>
+                        {{ form.nome }}
+                        <div class="text-danger small">{{ form.nome.errors }}</div>
                     </div>
 
                     <div class="col-md-6">
@@ -48,6 +49,27 @@
                         <label class="form-label fw-bold">Especialidade *</label>
                         {{ form.id_especialidade }}
                         <div class="text-danger small">{{ form.id_especialidade.errors }}</div>
+                    </div>
+                </div>
+
+                <h5 class="text-secondary border-bottom pb-2 mt-4 mb-3">Acesso ao Sistema</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Login *</label>
+                        {{ form.username }}
+                        <div class="text-danger small">{{ form.username.errors }}</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Senha *</label>
+                        {{ form.password }}
+                        <div class="text-danger small">{{ form.password.errors }}</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">E-mail</label>
+                        {{ form.email }}
+                        <div class="text-danger small">{{ form.email.errors }}</div>
                     </div>
                 </div>
 
