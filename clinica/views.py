@@ -460,20 +460,30 @@ def prontuario_paciente(request, cpf):
 
     return render(request, 'clinica/prontuario_paciente.html', contexto)
 
-# LISTAR PACIENTES
+# ==========================================
+# CRUD DE PACIENTES (COM SIDEBAR CORRIGIDA)
+# ==========================================
+
+@login_required
 def paciente_listar(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
 
     pacientes = Paciente.objects.all()
 
     contexto = {
-        'pacientes': pacientes
+        'pacientes': pacientes,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
     }
 
     return render(request, 'clinica/paciente_listar.html', contexto)
 
 
-# CRIAR PACIENTE
+@login_required
 def paciente_criar(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
 
     form = PacienteForm(request.POST or None)
 
@@ -481,25 +491,38 @@ def paciente_criar(request):
         form.save()
         return redirect('paciente_listar')
 
-    return render(request, 'clinica/paciente_form.html', {'form': form})
+    contexto = {
+        'form': form,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/paciente_form.html', contexto)
 
 
-# EDITAR PACIENTE
+@login_required
 def paciente_editar(request, cpf):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
 
     paciente = get_object_or_404(Paciente, pk=cpf)
-
     form = PacienteForm(request.POST or None, instance=paciente)
 
     if form.is_valid():
         form.save()
         return redirect('paciente_listar')
 
-    return render(request, 'clinica/paciente_form.html', {'form': form})
+    contexto = {
+        'form': form,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/paciente_form.html', contexto)
 
 
-# EXCLUIR PACIENTE
+@login_required
 def paciente_excluir(request, cpf):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
 
     paciente = get_object_or_404(Paciente, pk=cpf)
 
@@ -507,4 +530,9 @@ def paciente_excluir(request, cpf):
         paciente.delete()
         return redirect('paciente_listar')
 
-    return render(request, 'clinica/paciente_delete.html', {'paciente': paciente})
+    contexto = {
+        'paciente': paciente,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/paciente_delete.html', contexto)
