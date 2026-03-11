@@ -1,38 +1,66 @@
 {% extends 'clinica/base.html' %}
 
-{% block title %}Cadastro de Médico{% endblock %}
+{% block title %}Novo Médico{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow border-0">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">✏️ Formulário de Médico</h4>
-                </div>
-                <div class="card-body p-4">
-                    
-                    <form method="POST">
-                        {% csrf_token %}
-                        
-                        <div class="mb-4">
-                            {{ form.as_p }}
-                        </div>
-                        
-                        <hr class="text-secondary">
-                        
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{% url 'medico_listar' %}" class="btn btn-secondary">
-                                Cancelar e Voltar
-                            </a>
-                            <button type="submit" class="btn btn-success">
-                                💾 Salvar Médico
-                            </button>
-                        </div>
-                    </form>
-
-                </div>
+<div class="container-fluid">
+    <div class="card shadow border-0" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                {% if form.instance.pk %}
+                    ✏️ Editar Médico
+                {% else %}
+                    ➕ Cadastrar Novo Médico
+                {% endif %}
+            </h4>
+        </div>
+        <div class="card-body p-4">
+            
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                Por favor, corrija os erros abaixo.
             </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">CRM *</label>
+                        {{ form.crm }}
+                        <div class="text-danger small">{{ form.crm.errors }}</div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Usuário do Sistema (Login) *</label>
+                        {{ form.usuario_medico }}
+                        <div class="text-danger small">{{ form.usuario_medico.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Telefone</label>
+                        {{ form.telefone }}
+                        <div class="text-danger small">{{ form.telefone.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Especialidade *</label>
+                        {{ form.id_especialidade }}
+                        <div class="text-danger small">{{ form.id_especialidade.errors }}</div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'medico_listar' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">
+                        💾 Salvar Médico
+                    </button>
+                </div>
+            </form>
+            
         </div>
     </div>
 </div>

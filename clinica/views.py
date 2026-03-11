@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.utils import timezone
 from datetime import date, timedelta
-from .forms import PacienteForm
+from .forms import PacienteForm, MedicoForm
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from django.template.loader import get_template
