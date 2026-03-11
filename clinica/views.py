@@ -275,6 +275,7 @@ def cancelar_consulta(request):
 
     return render(request, 'clinica/cancelar_consulta.html', contexto)
 
+
 @login_required
 def agendar_consulta(request):
     is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
@@ -283,14 +284,30 @@ def agendar_consulta(request):
     if request.method == 'POST':
         cpf_paciente = request.POST.get('paciente')
         crm_medico = request.POST.get('medico')
-        data_consulta = request.POST.get('data_hora')
+        data_consulta = request.POST.get('data_hora')  # Agora vem do HTML no formato YYYY-MM-DDTHH:MM
 
         try:
-            # Vai buscar as instâncias do Paciente e do Médico à base de dados
             paciente = Paciente.objects.get(cpf=cpf_paciente)
             medico = Medico.objects.get(crm=crm_medico)
 
-            # Cria o registo da consulta
+            # VERIFICAÇÃO DE CHOQUE DE HORÁRIO:
+            # Busca se existe alguma consulta para este médico, neste mesmo horário, que não foi cancelada
+            horario_ocupado = Consulta.objects.filter(
+                crm_medico=medico,
+                data_hora=data_consulta,
+                status=Consulta.AGENDADO
+            ).exists()
+
+            if horario_ocupado:
+                # Se o horário estiver ocupado, criamos um erro amigável e paramos a execução
+                erro = "Este médico já possui uma consulta agendada exatamente para este horário. Por favor, selecione outro."
+                pacientes = Paciente.objects.all().order_by('nome_paciente')
+                medicos = Medico.objects.select_related('usuario_medico', 'id_especialidade').all()
+                contexto = {'erro': erro, 'pacientes': pacientes, 'medicos': medicos, 'is_medico': is_medico,
+                            'is_recepcionista': is_recepcionista}
+                return render(request, 'clinica/agendar_consulta.html', contexto)
+
+            # Se passar da verificação, cria o registro da consulta normalmente
             Consulta.objects.create(
                 cpf_paciente=paciente,
                 crm_medico=medico,
@@ -300,19 +317,19 @@ def agendar_consulta(request):
             )
             # Reencaminha para o dashboard após agendar com sucesso
             return redirect('dashboard')
-            
+
         except Exception as e:
             erro = f"Erro ao agendar a consulta: {str(e)}"
-            # Em caso de erro, volta a carregar a página com as listas
             pacientes = Paciente.objects.all().order_by('nome_paciente')
             medicos = Medico.objects.select_related('usuario_medico', 'id_especialidade').all()
-            contexto = {'erro': erro, 'pacientes': pacientes, 'medicos': medicos, 'is_medico': is_medico, 'is_recepcionista': is_recepcionista}
+            contexto = {'erro': erro, 'pacientes': pacientes, 'medicos': medicos, 'is_medico': is_medico,
+                        'is_recepcionista': is_recepcionista}
             return render(request, 'clinica/agendar_consulta.html', contexto)
 
-    # Se for um pedido GET (apenas a abrir o ecrã)
+    # Se for um pedido GET (apenas a abrir a tela)
     pacientes = Paciente.objects.all().order_by('nome_paciente')
     medicos = Medico.objects.select_related('usuario_medico', 'id_especialidade').all()
-    
+
     contexto = {
         'pacientes': pacientes,
         'medicos': medicos,
