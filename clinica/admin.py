@@ -10,9 +10,9 @@ class PacienteAdmin(admin.ModelAdmin):
 
 @admin.register(Medico)
 class MedicoAdmin(admin.ModelAdmin):
-    list_display = ('crm', 'usuario_medico', 'especialidade', 'telefone')
-    search_fields = ('crm', 'especialidade')
-    list_filter = ('especialidade',) # Filtro lateral por especialidade
+    list_display = ('crm', 'usuario_medico', 'id_especialidade', 'telefone')
+    search_fields = ('crm', 'id_especialidade__nome')
+    list_filter = ('id_especialidade',) # Filtro lateral por especialidade
 
 @admin.register(Consulta)
 class ConsultaAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class ConsultaAdmin(admin.ModelAdmin):
 
 @admin.register(Prontuario)
 class ProntuarioAdmin(admin.ModelAdmin):
-    list_display = ('id_consulta_pront', 'data_registro', 'crm_medico_pront', 'cpf_paciente_pront')
+    list_display = ('consulta', 'data_registro', 'crm_medico_pront', 'cpf_paciente_pront')
     list_filter = ('data_registro',)
 
 @admin.register(Recepcionista)

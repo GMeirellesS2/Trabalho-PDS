@@ -1,0 +1,81 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Pesquisar Médicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Pesquisar Médicos</h4>
+        </div>
+        <div class="card-body">
+            
+            <form method="GET" action="." class="row g-3 mb-4">
+                <div class="col-md-10">
+                    <input type="text" name="busca" class="form-control" 
+                           placeholder="Digite o nome, CRM ou especialidade do médico..." 
+                           value="{{ request.GET.busca|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success w-100">Buscar</button>
+                </div>
+            </form>
+
+            <hr>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>CRM</th>
+                            <th>Nome do Médico</th>
+                            <th>Especialidade</th>
+                            <th>Telefone</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for medico in medicos %}
+                        <tr>
+                            <td>{{ medico.crm }}</td>
+                            
+                            <td>
+                                Dr(a). 
+                                {% if medico.usuario_medico %}
+                                    {% if medico.usuario_medico.first_name %}
+                                        {{ medico.usuario_medico.first_name }}
+                                    {% else %}
+                                        {{ medico.usuario_medico.username }}
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">Sem Usuário Vinculado</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td>
+                                {% if medico.id_especialidade %}
+                                    {{ medico.id_especialidade.nome }}
+                                {% else %}
+                                    <span class="text-muted">Não informada</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td>{{ medico.telefone|default:"-" }}</td>
+                            
+                            <td>
+                                <a href="{% url 'agenda_medico' medico.crm %}" class="btn btn-sm btn-outline-success">Ver Agenda</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">Nenhum médico encontrado com o termo pesquisado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

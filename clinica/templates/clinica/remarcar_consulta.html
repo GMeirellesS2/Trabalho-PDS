@@ -1,0 +1,79 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Remarcar Consulta{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="card shadow border-0" style="max-width: 700px; margin: 0 auto;">
+
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">🔄 Remarcar Consulta</h4>
+        </div>
+
+        <div class="card-body p-4">
+
+            {% if erro %}
+            <div class="alert alert-danger">
+                {{ erro }}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!--ID DA CONSULTA-->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">ID da Consulta *</label>
+                    <input type="number" name="id_consulta" class="form-control" required>
+                </div>
+
+                <div class="d-flex gap-2 mb-4">
+                    <button type="submit" class="btn btn-primary">
+                        Buscar Consulta
+                    </button>
+                </div>
+
+                {% if consulta %}
+
+                <hr>
+
+                <!--DATA ANTIGA-->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Data Atual da Consulta</label>
+                    <input type="text"
+                           class="form-control"
+                           value="{{ consulta.data_hora }}"
+                           readonly>
+                </div>
+
+                <!--NOVA DATA-->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nova Data da Consulta *</label>
+                    <input type="date"
+                           name="nova_data"
+                           class="form-control"
+                           required>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-warning">
+                        Confirmar Remarcação
+                    </button>
+
+                </div>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

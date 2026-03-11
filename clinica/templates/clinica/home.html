@@ -1,45 +1,41 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Sistema da Clínica</title>
-</head>
-<body>
+{% extends 'clinica/base.html' %} 
+{% block title %}Dashboard - Minha Clínica{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
     
-    {% if user.is_authenticated %}
-        <p>Bem-vindo, {{ user.username }}!</p>
+    <h2 class="mb-4 text-secondary">Dashboard</h2>
 
-        {% if is_medico %}
-            <button>Ver Meus Prontuários</button>
-            <button>Minhas Consultas</button>
-        {% endif %}
+    <div class="row g-4 mb-4">
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4" style="background-color: #e3f2fd;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+                    <h5 class="text-muted text-uppercase fw-bold mb-2">Pacientes</h5>
+                    <h1 class="display-4 fw-bold text-primary mb-0">{{ total_pacientes }}</h1>
+                </div>
+            </div>
+        </div>
 
-        {% if is_recepcionista %}
-            <button>Cadastrar Novo Paciente</button>
-            <button>Agendar Consulta</button>
-        {% endif %}
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4" style="background-color: #e8f5e9;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+                    <h5 class="text-muted text-uppercase fw-bold mb-2">Médicos</h5>
+                    <h1 class="display-4 fw-bold text-success mb-0">{{ total_medicos }}</h1>
+                </div>
+            </div>
+        </div>
 
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Sair</button>
-        </form>
-    {% else %}
-        <a href="{% url 'login' %}">Fazer Login</a>
-    {% endif %} 
-    <h1>Bem-vindo ao Sistema da Clínica</h1>
-    <hr> <h2>Nossos Pacientes Cadastrados:</h2>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4" style="background-color: #fff3e0;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+                    <h5 class="text-muted text-uppercase fw-bold mb-2">Consultas</h5>
+                    <h1 class="display-4 fw-bold text-warning mb-0">{{ total_consultas }}</h1>
+                </div>
+            </div>
+        </div>
 
-    <ul>
-        {% for paciente in lista_pacientes %}
-            <li>
-                <strong>{{ paciente.nome_paciente }}</strong> <br>
-                CPF: {{ paciente.cpf }} | Convênio: {{ paciente.convenio }}
-            </li>
-            <br>
-        {% empty %}
-            <li>Nenhum paciente cadastrado no momento.</li>
-        {% endfor %}
-    </ul>
-<!-- a -->
-</body>
-</html>
+    </div>
+
+</div>
+{% endblock %}

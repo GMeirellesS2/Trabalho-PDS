@@ -1,0 +1,115 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Minhas Consultas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📝 Minhas Consultas</h4>
+        </div>
+        <div class="card-body">
+            
+            {% if erro %}
+                <div class="alert alert-danger">{{ erro }}</div>
+            {% endif %}
+
+            <div class="btn-group mb-4 w-100 shadow-sm" role="group">
+                <a href="?filtro=hoje" class="btn btn-outline-primary {% if filtro_atual == 'hoje' %}active{% endif %}">Hoje</a>
+                <a href="?filtro=semana" class="btn btn-outline-primary {% if filtro_atual == 'semana' %}active{% endif %}">Nesta Semana</a>
+                <a href="?filtro=mes" class="btn btn-outline-primary {% if filtro_atual == 'mes' %}active{% endif %}">Neste Mês</a>
+                <a href="?filtro=todas" class="btn btn-outline-primary {% if filtro_atual == 'todas' %}active{% endif %}">Todas Agendadas</a>
+                <a href="?filtro=historico" class="btn btn-outline-secondary {% if filtro_atual == 'historico' %}active{% endif %}">Histórico (Concluídas)</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Data</th>
+                            <th>Paciente</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consulta in consultas %}
+                        <tr>
+                            <td class="fw-bold">{{ consulta.data_hora|date:"d/m/Y H:i" }}</td>
+                            <td>{{ consulta.cpf_paciente.nome_paciente }} (CPF: {{ consulta.cpf_paciente.cpf }})</td>
+                            <td>
+                                {% if consulta.status == 'Agendada' %}
+                                    <span class="badge bg-warning text-dark">Agendada</span>
+                                {% else %}
+                                    <span class="badge bg-success">Concluída</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if consulta.status == 'Agendada' %}
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalProntuario{{ consulta.id_consulta }}">
+                                        Atender / Prontuário
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-secondary" disabled>Já Atendido</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <div class="modal fade" id="modalProntuario{{ consulta.id_consulta }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title">Preencher Prontuário - {{ consulta.cpf_paciente.nome_paciente }}</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    
+                                    <form method="POST" action="{% url 'consultas_medico' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="id_consulta" value="{{ consulta.id_consulta }}">
+                                        
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Histórico Clínico (Anamnese)</label>
+                                                <textarea name="historico_clinico" class="form-control" rows="3"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Exame Físico</label>
+                                                <textarea name="exame_fisico" class="form-control" rows="2"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Diagnóstico</label>
+                                                <textarea name="diagnostico" class="form-control" rows="2"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Prescrição Médica</label>
+                                                <textarea name="prescricao" class="form-control" rows="3"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Exames Solicitados</label>
+                                                <textarea name="exames_solicitados" class="form-control" rows="2"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer bg-light">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-success">Salvar e Concluir Consulta</button>
+                                        </div>
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-5">
+                                <h5>Nenhuma consulta encontrada para este filtro.</h5>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

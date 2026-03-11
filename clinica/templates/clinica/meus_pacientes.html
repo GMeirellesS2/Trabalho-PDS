@@ -1,0 +1,61 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Meus Pacientes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">🩺 Meus Pacientes</h4>
+        </div>
+        <div class="card-body">
+            
+            <form method="GET" action="." class="row g-3 mb-4">
+                <div class="col-md-10">
+                    <input type="text" name="busca" class="form-control" 
+                           placeholder="Buscar nos meus pacientes por nome ou CPF..." 
+                           value="{{ request.GET.busca|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-dark w-100">Buscar</button>
+                </div>
+            </form>
+
+            <hr>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>CPF</th>
+                            <th>Nome do Paciente</th>
+                            <th>Data Nasc.</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paciente in pacientes %}
+                        <tr>
+                            <td>{{ paciente.cpf }}</td>
+                            <td class="fw-bold">{{ paciente.nome_paciente }}</td>
+                            <td>{{ paciente.data_nasc|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'prontuario_paciente' paciente.cpf %}" class="btn btn-sm btn-primary">Abrir Prontuário</a>
+
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                Você ainda não possui pacientes vinculados a consultas ou a busca não encontrou resultados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

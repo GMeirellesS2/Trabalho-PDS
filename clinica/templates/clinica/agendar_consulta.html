@@ -1,0 +1,77 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Agendar Consulta{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow border-0" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">📅 Agendar Nova Consulta</h4>
+        </div>
+        <div class="card-body p-4">
+            
+            {% if erro %}
+            <div class="alert alert-danger" role="alert">
+                {{ erro }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'agendar_consulta' %}">
+                {% csrf_token %}
+                
+                <div class="row g-4">
+                    <div class="col-md-12">
+                        <label for="paciente" class="form-label fw-bold">Paciente *</label>
+                        <select name="paciente" id="paciente" class="form-select" required>
+                            <option value="">Selecione o paciente...</option>
+                            {% for paciente in pacientes %}
+                                <option value="{{ paciente.cpf }}">{{ paciente.nome_paciente }} (CPF: {{ paciente.cpf }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <label for="medico" class="form-label fw-bold">Médico Especialista *</label>
+                        <select name="medico" id="medico" class="form-select" required>
+                            <option value="">Selecione o médico...</option>
+                            {% for medico in medicos %}
+                                <option value="{{ medico.crm }}">
+                                    Dr(a). 
+                                    {% if medico.usuario_medico %}
+                                        {% if medico.usuario_medico.first_name %}
+                                            {{ medico.usuario_medico.first_name }}
+                                        {% else %}
+                                            {{ medico.usuario_medico.username }}
+                                        {% endif %}
+                                    {% else %}
+                                        Sem Usuário
+                                    {% endif %}
+                                    - 
+                                    {% if medico.id_especialidade %}
+                                        {{ medico.id_especialidade.nome }}
+                                    {% else %}
+                                        Especialidade não informada
+                                    {% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="data_hora" class="form-label fw-bold">Data da Consulta *</label>
+                        <input type="datetime-local" name="data_hora" id="data_hora" class="form-control" required>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Confirmar Agendamento</button>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

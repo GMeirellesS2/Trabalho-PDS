@@ -25,9 +25,13 @@ class Medico(models.Model):
     crm = models.CharField(primary_key=True, max_length=20)
     # Aqui conectamos o médico ao usuário do Django (para ele fazer login)
     usuario_medico = models.OneToOneField(User, on_delete=models.SET_NULL, db_column='usuario_medico', blank=True, null=True)
-    especialidade = models.CharField(max_length=100, blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
-    id_especialidade = models.ForeignKey('Especialidade', on_delete=models.DO_NOTHING, db_column='id_especialidade',blank=True,null=True)
+    id_especialidade = models.ForeignKey('Especialidade',
+    on_delete=models.DO_NOTHING,
+    db_column='id_especialidade',
+    verbose_name='Especialidade',
+    blank=True,
+    null=True)
 
     class Meta:
         managed = False
@@ -41,15 +45,15 @@ class Consulta(models.Model):
     AGENDADO = "Agendada"
     CONCLUIDO = "Concluida"
     CANCELADA = "Cancelada"
-
-    Consulta_Status = {
-        AGENDADO: "Agendada",
-        CONCLUIDO: "Concluida",
-        CANCELADA: "Cancelada"
-    }
+    # o erro estava na conexão com models e com o banco
+    Consulta_Status = [
+        (AGENDADO, "Agendada"),
+        (CONCLUIDO, "Concluída"),
+        (CANCELADA, "Cancelada"),
+    ]
     
     id_consulta = models.AutoField(primary_key=True)
-    data_hora = models.DateField(blank=True, null=True)
+    data_hora = models.DateTimeField(blank=True, null=True)
     crm_medico = models.ForeignKey(Medico, on_delete=models.DO_NOTHING, db_column='crm_medico', blank=True, null=True)
     cpf_paciente = models.ForeignKey(Paciente, on_delete=models.DO_NOTHING, db_column='cpf_paciente', blank=True, null=True)
     status = models.CharField(max_length=9, choices = Consulta_Status, default = AGENDADO)
@@ -60,12 +64,13 @@ class Consulta(models.Model):
         db_table = 'consulta'
 
     def __str__(self):
-        return f"Consulta {self.id_consulta} - {self.data_hora}"
+        paciente = self.cpf_paciente.nome_paciente if self.cpf_paciente else "Sem paciente"
+        return f"{paciente} - {self.data_hora}"
 
 class Prontuario(models.Model):
     # O Django OBRIGA todo model a ter uma primary_key.
     # Como não tinha nenhuma, coloquei a id_consulta_pront como Chave Primária por enquanto.
-    id_consulta_pront = models.OneToOneField(Consulta, on_delete=models.DO_NOTHING, db_column='id_consulta_pront', primary_key=True)
+    consulta = models.OneToOneField(Consulta,on_delete=models.DO_NOTHING,db_column='id_consulta_pront',  primary_key=True)    
     crm_medico_pront = models.ForeignKey(Medico, on_delete=models.DO_NOTHING, db_column='crm_medico_pront', blank=True, null=True)
     cpf_paciente_pront = models.ForeignKey(Paciente, on_delete=models.DO_NOTHING, db_column='cpf_paciente_pront', blank=True, null=True)
     historico_clinico = models.TextField(blank=True, null=True)
