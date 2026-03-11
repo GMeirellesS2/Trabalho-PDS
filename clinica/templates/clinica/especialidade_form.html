@@ -1,0 +1,42 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Especialidade{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Cadastrar / Editar Especialidade</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Nome da Especialidade</label>
+                    {{ form.nome }}
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    💾 Salvar
+                </button>
+
+                <a href="{% url 'especialidade_listar' %}" class="btn btn-secondary">
+                    🔙 Voltar
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

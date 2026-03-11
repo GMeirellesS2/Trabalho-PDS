@@ -30,6 +30,11 @@ urlpatterns = [
     path('medicos/editar/<path:crm>/', views.medico_editar, name='medico_editar'),
     path('medicos/excluir/<path:crm>/', views.medico_excluir, name='medico_excluir'),
     path('gerenciar_consultas/', views.gerenciar_consultas, name='gerenciar_consultas'),
+
+    path('especialidades/', views.especialidade_listar, name='especialidade_listar'),
+path('especialidades/criar/', views.especialidade_criar, name='especialidade_criar'),
+path('especialidades/editar/<int:id>/', views.especialidade_editar, name='especialidade_editar'),
+path('especialidades/excluir/<int:id>/', views.especialidade_excluir, name='especialidade_excluir'),
 ]
 
 #####subindo commit

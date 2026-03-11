@@ -1,5 +1,5 @@
 from django import forms
-from .models import Paciente, Medico
+from .models import Paciente, Medico, Especialidade
 
 
 class PacienteForm(forms.ModelForm):
@@ -28,3 +28,13 @@ class MedicoEditForm(forms.ModelForm):
     class Meta:
         model = Medico
         fields = ['crm', 'nome', 'telefone', 'id_especialidade']
+
+class EspecialidadeForm(forms.ModelForm):
+
+    class Meta:
+        model = Especialidade
+        fields = ['nome']
+
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control'})
+        }

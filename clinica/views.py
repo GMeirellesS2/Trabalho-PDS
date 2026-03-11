@@ -15,6 +15,8 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from django.contrib.auth.models import User, Group
 from django.db import transaction
+from .models import Especialidade
+from .forms import EspecialidadeForm
 
 def index(request):
     return render(request, 'clinica/index.html')
@@ -722,3 +724,86 @@ def gerenciar_consultas(request):
     }
 
     return render(request, 'clinica/gerenciar_consultas.html', contexto)
+
+@login_required
+def especialidade_listar(request):
+
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    especialidades = Especialidade.objects.all()
+
+    contexto = {
+        'especialidades': especialidades,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+
+    return render(request, 'clinica/especialidade_listar.html', contexto)
+
+@login_required
+def especialidade_criar(request):
+
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    form = EspecialidadeForm(request.POST or None)
+
+    if form.is_valid():
+        form.save()
+        return redirect('especialidade_listar')
+
+    contexto = {
+        'form': form,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+
+    return render(request, 'clinica/especialidade_form.html', contexto)
+
+@login_required
+def especialidade_editar(request, id):
+
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    especialidade = get_object_or_404(Especialidade, pk=id)
+
+    form = EspecialidadeForm(request.POST or None, instance=especialidade)
+
+    if form.is_valid():
+        form.save()
+        return redirect('especialidade_listar')
+
+    contexto = {
+        'form': form,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+
+    return render(request, 'clinica/especialidade_form.html', contexto)
+
+@login_required
+def especialidade_excluir(request, id):
+
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    especialidade = get_object_or_404(Especialidade, pk=id)
+
+    if request.method == "POST":
+        especialidade.delete()
+        return redirect('especialidade_listar')
+
+    contexto = {
+        'especialidade': especialidade,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+
+    return render(request, 'clinica/especialidade_delete.html', contexto)
+
+
+
+
+

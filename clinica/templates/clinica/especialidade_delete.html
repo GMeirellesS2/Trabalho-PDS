@@ -1,0 +1,41 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Excluir Especialidade{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Excluir Especialidade</h4>
+        </div>
+
+        <div class="card-body">
+
+            <p>Tem certeza que deseja excluir a especialidade:</p>
+
+            <h5 class="text-danger">{{ especialidade.nome }}</h5>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-danger">
+                    ❌ Confirmar Exclusão
+                </button>
+
+                <a href="{% url 'especialidade_listar' %}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
