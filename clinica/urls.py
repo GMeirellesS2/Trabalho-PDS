@@ -14,7 +14,6 @@ urlpatterns = [
     path('novo_paciente/', views.novo_paciente, name='novo_paciente'),
     path('paciente/<str:cpf>/prontuario/', views.prontuario_paciente, name='prontuario_paciente'),
     path('medico/<path:crm>/agenda/', views.agenda_medico, name='agenda_medico'),
-
     path('paciente/<str:cpf>/prontuario/pdf/', views.exportar_prontuario_pdf, name='exportar_prontuario_pdf'),
     path('agendar_consulta/', views.agendar_consulta, name='agendar_consulta'),
     path('meus_pacientes/', views.meus_pacientes, name='meus_pacientes'),
@@ -26,4 +25,8 @@ urlpatterns = [
     path('remarcar_consulta/', views.remarcar_consulta, name='remarcar_consultas'),
     path('cancelar_consulta/', views.cancelar_consulta, name='cancelar_consulta'),
     
+    path('medicos/', views.medico_listar, name='medico_listar'),
+    path('medicos/novo/', views.medico_criar, name='medico_criar'),
+    path('medicos/editar/<path:crm>/', views.medico_editar, name='medico_editar'),
+    path('medicos/excluir/<path:crm>/', views.medico_excluir, name='medico_excluir'),
 ]

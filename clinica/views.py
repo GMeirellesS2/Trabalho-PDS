@@ -536,3 +536,77 @@ def paciente_excluir(request, cpf):
         'is_recepcionista': is_recepcionista
     }
     return render(request, 'clinica/paciente_delete.html', contexto)
+
+# ==========================================
+# CRUD DE MÉDICOS
+# ==========================================
+
+@login_required
+def medico_listar(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    # Usamos select_related para deixar o carregamento do usuário e especialidade mais rápido
+    medicos = Medico.objects.all().select_related('usuario_medico', 'id_especialidade')
+
+    contexto = {
+        'medicos': medicos,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/medico_listar.html', contexto)
+
+@login_required
+def medico_criar(request):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    form = MedicoForm(request.POST or None)
+
+    if form.is_valid():
+        form.save()
+        return redirect('medico_listar')
+
+    contexto = {
+        'form': form,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/medico_form.html', contexto)
+
+@login_required
+def medico_editar(request, crm):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    medico = get_object_or_404(Medico, pk=crm)
+    form = MedicoForm(request.POST or None, instance=medico)
+
+    if form.is_valid():
+        form.save()
+        return redirect('medico_listar')
+
+    contexto = {
+        'form': form,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/medico_form.html', contexto)
+
+@login_required
+def medico_excluir(request, crm):
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    medico = get_object_or_404(Medico, pk=crm)
+
+    if request.method == "POST":
+        medico.delete()
+        return redirect('medico_listar')
+
+    contexto = {
+        'medico': medico,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/medico_delete.html', contexto)

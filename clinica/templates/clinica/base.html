@@ -24,12 +24,14 @@
 
         {% if is_recepcionista %}
             <a href="{% url 'buscar_paciente' %}">🔍 Buscar Paciente</a>
-            <a href ="{% url 'paciente_listar' %}"> 📋 Gerenciar Pacientes</a>
-            <a href="{% url 'buscar_medico' %}">👨‍⚕️ Buscar Médico</a> 
-            <a href="/agendar_consulta/">📅 Agendar Consulta</a>
-            <a href="/remarcar_consulta/">🔄 Remarcar Consulta</a>
-            <a href="/cancelar_consulta/">❌ Cancelar Consulta</a>
-            <a href="/novo_paciente/">➕ Novo Paciente</a>
+            <a href="{% url 'buscar_medico' %}">👨‍⚕️ Buscar Médico</a>
+            <a href="{% url 'agendar_consulta' %}">📅 Agendar Consulta</a>
+            
+            <hr class="text-secondary my-2">
+            
+            <small class="text-muted text-uppercase fw-bold px-2 d-block mt-3 mb-1" style="font-size: 0.7rem;">Gerenciamento</small>
+            <a href="{% url 'paciente_listar' %}">📋 Lista de Pacientes</a>
+            <a href="{% url 'medico_listar' %}">🩺 Lista de Médicos</a>
         {% endif %}
 
         {% if is_medico %}
