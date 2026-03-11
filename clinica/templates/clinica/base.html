@@ -27,13 +27,13 @@
             <a href="{% url 'buscar_medico' %}">👨‍⚕️ Buscar Médico</a>
             <a href="{% url 'agendar_consulta' %}">➕ Agendar Consulta</a>
             <a href="{% url 'gerenciar_consultas' %}">📅 Consultas</a>
-            <a href="{% url 'especialidade_listar' %}">🔬 Gerenciar Especialidades</a>
             
             <hr class="text-secondary my-2">
             
             <small class="text-muted text-uppercase fw-bold px-2 d-block mt-3 mb-1" style="font-size: 0.7rem;">Gerenciamento</small>
-            <a href="{% url 'paciente_listar' %}">📋 Lista de Pacientes</a>
-            <a href="{% url 'medico_listar' %}">🩺 Lista de Médicos</a>
+            <a href="{% url 'paciente_listar' %}">📋 Gerenciar Pacientes</a>
+            <a href="{% url 'medico_listar' %}">🩺 Gerenciar Médicos</a>
+            <a href="{% url 'especialidade_listar' %}">🔬 Gerenciar Especialidades</a>
         {% endif %}
 
         {% if is_medico %}
