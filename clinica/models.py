@@ -85,7 +85,7 @@ class Prontuario(models.Model):
         db_table = 'prontuario'
 
     def __str__(self):
-        return f"Prontuário da Consulta {self.id_consulta_pront}"
+        return f"Prontuário da Consulta {self.consulta}"
     
 class Especialidade(models.Model):
 

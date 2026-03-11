@@ -199,43 +199,41 @@ def novo_paciente(request):
 @login_required
 def remarcar_consulta(request):
 
-    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
-    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+    id_consulta = request.GET.get('id')
 
     consulta = None
     erro = None
 
-    if request.method == 'POST':
+    if id_consulta:
+        try:
+            consulta = Consulta.objects.select_related(
+                'cpf_paciente',
+                'crm_medico'
+            ).get(id_consulta=id_consulta)
+
+        except Consulta.DoesNotExist:
+            erro = "Consulta não encontrada."
+
+    if request.method == "POST":
 
         id_consulta = request.POST.get('id_consulta')
         nova_data = request.POST.get('nova_data')
 
-        try:
-            consulta = Consulta.objects.get(id_consulta=id_consulta)
+        consulta = Consulta.objects.get(id_consulta=id_consulta)
+        consulta.data_hora = nova_data
+        consulta.save()
 
-            # Se o formulário enviou nova data -> atualizar
-            if nova_data:
-                consulta.data_hora = nova_data
-                consulta.save()
-                return redirect('dashboard')
+        return redirect('dashboard')
 
-        except Consulta.DoesNotExist:
-            erro = "Consulta não encontrada."
-
-        except Exception as e:
-            erro = f"Erro ao remarcar consulta: {str(e)}"
-
-    contexto = {
+    return render(request, 'clinica/remarcar_consulta.html', {
         'consulta': consulta,
-        'erro': erro,
-        'is_medico': is_medico,
-        'is_recepcionista': is_recepcionista
-    }
-
-    return render(request, 'clinica/remarcar_consulta.html', contexto)
+        'erro': erro
+    })
 
 @login_required
 def cancelar_consulta(request):
+
+    id_consulta = request.GET.get('id') or request.POST.get('id_consulta')
 
     is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
     is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
@@ -243,28 +241,28 @@ def cancelar_consulta(request):
     consulta = None
     erro = None
 
-    if request.method == 'POST':
+    try:
+        consulta = Consulta.objects.select_related(
+            'cpf_paciente',
+            'crm_medico',
+            'crm_medico__usuario_medico'
+        ).get(id_consulta=id_consulta)
 
-        id_consulta = request.POST.get('id_consulta')
-        confirmar = request.POST.get('confirmar_cancelamento')
+        if request.method == "POST":
 
-        try:
-            consulta = Consulta.objects.select_related(
-                'cpf_paciente',
-                'crm_medico',
-                'crm_medico__usuario_medico'
-            ).get(id_consulta=id_consulta)
+            confirmar = request.POST.get('confirmar_cancelamento') == "1"
 
-            # Se clicou em confirmar cancelamento
             if confirmar:
-                consulta.delete()
-                return redirect('dashboard')
+                consulta.status = Consulta.CANCELADA
+                consulta.save()
 
-        except Consulta.DoesNotExist:
-            erro = "Consulta não encontrada."
+                return redirect('gerenciar_consultas')
 
-        except Exception as e:
-            erro = f"Erro ao cancelar consulta: {str(e)}"
+    except Consulta.DoesNotExist:
+        erro = "Consulta não encontrada."
+
+    except Exception as e:
+        erro = f"Erro ao cancelar consulta: {str(e)}"
 
     contexto = {
         'consulta': consulta,
@@ -274,7 +272,6 @@ def cancelar_consulta(request):
     }
 
     return render(request, 'clinica/cancelar_consulta.html', contexto)
-
 
 @login_required
 def agendar_consulta(request):
@@ -627,3 +624,25 @@ def medico_excluir(request, crm):
         'is_recepcionista': is_recepcionista
     }
     return render(request, 'clinica/medico_delete.html', contexto)
+
+@login_required
+def gerenciar_consultas(request):
+
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
+    consultas = Consulta.objects.filter(
+        status=Consulta.AGENDADO
+    ).select_related(
+        'cpf_paciente',
+        'crm_medico',
+        'crm_medico__usuario_medico'
+    ).order_by('data_hora')
+
+    contexto = {
+        'consultas': consultas,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+
+    return render(request, 'clinica/gerenciar_consultas.html', contexto)

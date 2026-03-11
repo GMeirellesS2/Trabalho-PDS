@@ -29,4 +29,5 @@ urlpatterns = [
     path('medicos/novo/', views.medico_criar, name='medico_criar'),
     path('medicos/editar/<path:crm>/', views.medico_editar, name='medico_editar'),
     path('medicos/excluir/<path:crm>/', views.medico_excluir, name='medico_excluir'),
+    path('gerenciar_consultas/', views.gerenciar_consultas, name='gerenciar_consultas'),
 ]

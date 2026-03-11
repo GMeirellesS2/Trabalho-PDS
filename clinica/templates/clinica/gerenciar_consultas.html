@@ -1,0 +1,51 @@
+{% extends 'clinica/base.html' %}
+
+{% block title %}Consultas{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">📅 Consultas Agendadas</h3>
+
+<div class="row">
+
+{% for consulta in consultas %}
+
+<div class="col-md-4 mb-4">
+
+<div class="card shadow">
+
+<div class="card-body">
+
+<h5 class="card-title">
+{{ consulta.cpf_paciente.nome_paciente }}
+</h5>
+
+<p class="card-text">
+👨‍⚕️ Dr(a). {{ consulta.crm_medico.usuario_medico.first_name }} <br>
+📅 {{ consulta.data_hora }}
+</p>
+
+<div class="d-flex gap-2">
+
+<a href="/remarcar_consulta/?id={{consulta.id_consulta}}"
+class="btn btn-warning btn-sm">
+Remarcar
+</a>
+
+<a href="/cancelar_consulta/?id={{consulta.id_consulta}}"
+class="btn btn-danger btn-sm">
+Cancelar
+</a>
+
+</div>
+
+</div>
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

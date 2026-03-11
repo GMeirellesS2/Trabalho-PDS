@@ -1,79 +1,72 @@
-{% extends 'clinica/base.html' %}
+{% extends "clinica/base.html" %}
 
-{% block title %}Remarcar Consulta{% endblock %}
+{% block title %}
+Remarcar Consulta
+{% endblock %}
 
 {% block content %}
 
-<div class="container-fluid">
-    <div class="card shadow border-0" style="max-width: 700px; margin: 0 auto;">
+<div class="container">
 
-        <div class="card-header bg-warning text-dark">
-            <h4 class="mb-0">🔄 Remarcar Consulta</h4>
-        </div>
+<h2 class="mb-4">Remarcar Consulta</h2>
 
-        <div class="card-body p-4">
+{% if erro %}
+<div class="alert alert-danger">
+{{ erro }}
+</div>
+{% endif %}
 
-            {% if erro %}
-            <div class="alert alert-danger">
-                {{ erro }}
-            </div>
-            {% endif %}
+{% if consulta %}
 
-            <form method="POST">
-                {% csrf_token %}
+<div class="card p-4">
 
-                <!--ID DA CONSULTA-->
-                <div class="mb-3">
-                    <label class="form-label fw-bold">ID da Consulta *</label>
-                    <input type="number" name="id_consulta" class="form-control" required>
-                </div>
+<p><strong>Paciente:</strong> {{ consulta.cpf_paciente.nome_paciente }}</p>
 
-                <div class="d-flex gap-2 mb-4">
-                    <button type="submit" class="btn btn-primary">
-                        Buscar Consulta
-                    </button>
-                </div>
+<p><strong>Médico:</strong> {{ consulta.crm_medico.nome_medico }}</p>
 
-                {% if consulta %}
+<p><strong>Data atual:</strong> {{ consulta.data_hora }}</p>
 
-                <hr>
+<hr>
 
-                <!--DATA ANTIGA-->
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Data Atual da Consulta</label>
-                    <input type="text"
-                           class="form-control"
-                           value="{{ consulta.data_hora }}"
-                           readonly>
-                </div>
+<form method="post">
 
-                <!--NOVA DATA-->
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Nova Data da Consulta *</label>
-                    <input type="date"
-                           name="nova_data"
-                           class="form-control"
-                           required>
-                </div>
+{% csrf_token %}
 
-                <div class="d-flex justify-content-end gap-2">
+<input type="hidden"
+       name="id_consulta"
+       value="{{ consulta.id_consulta }}">
 
-                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
-                        Cancelar
-                    </a>
+<label class="form-label">Nova data da consulta</label>
 
-                    <button type="submit" class="btn btn-warning">
-                        Confirmar Remarcação
-                    </button>
+<input type="datetime-local"
+       name="nova_data"
+       class="form-control"
+       required>
 
-                </div>
+<br>
 
-                {% endif %}
+<button type="submit"
+        class="btn btn-warning">
+Remarcar Consulta
+</button>
 
-            </form>
+<a href="{% url 'dashboard' %}"
+   class="btn btn-secondary">
+Cancelar
+</a>
 
-        </div>
-    </div>
+</form>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-warning">
+Nenhuma consulta encontrada.
+</div>
+
+{% endif %}
+
 </div>
 
 {% endblock %}
