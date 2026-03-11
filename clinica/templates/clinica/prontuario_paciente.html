@@ -31,7 +31,7 @@
     {% for prontuario in prontuarios %}
     <div class="card shadow-sm mb-4 border-left-primary">
         <div class="card-header bg-light d-flex justify-content-between">
-            <strong>Data do Atendimento: {{ prontuario.data_registro|date:"d/m/Y" }}</strong>
+            <strong>Data do Atendimento: {{ prontuario.data_registro|date:"d/m/Y H:i"}}</strong>
             <span class="text-muted">Médico: Dr(a). {{ prontuario.crm_medico_pront.usuario_medico.first_name|default:prontuario.crm_medico_pront.usuario_medico.username }}</span>
         </div>
         <div class="card-body">
