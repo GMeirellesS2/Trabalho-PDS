@@ -60,11 +60,13 @@
                         <div class="text-danger small">{{ form.username.errors }}</div>
                     </div>
 
+                    {% if form.password %}
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Senha *</label>
                         {{ form.password }}
                         <div class="text-danger small">{{ form.password.errors }}</div>
                     </div>
+                    {% endif %}
 
                     <div class="col-md-4">
                         <label class="form-label fw-bold">E-mail</label>

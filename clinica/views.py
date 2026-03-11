@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.utils import timezone
 from datetime import date, timedelta
-from .forms import PacienteForm, MedicoForm
+from .forms import PacienteForm, MedicoForm, MedicoEditForm
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -592,51 +592,81 @@ def medico_listar(request):
 
 @login_required
 def medico_criar(request):
+    # 1. CORREÇÃO DA SIDEBAR: Adicionamos as verificações
+    is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
+    is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
+
     if request.method == 'POST':
         form = MedicoForm(request.POST)
         if form.is_valid():
             try:
-                # O "atomic" garante que se der erro no meio, ele cancela TUDO e não cria nada pela metade
                 with transaction.atomic():
-                    # 1. Cria o Usuário base do Django
                     user = User.objects.create_user(
                         username=form.cleaned_data['username'],
                         password=form.cleaned_data['password'],
                         email=form.cleaned_data['email'],
-                        first_name=form.cleaned_data['nome']  # Já salva o nome de primeira no User também
+                        first_name=form.cleaned_data['nome']
                     )
 
-                    # 2. Busca o grupo 'Médicos' e adiciona o usuário lá
-                    # (Se o grupo não existir no banco, ele cria sozinho na hora)
                     grupo_medicos, created = Group.objects.get_or_create(name='Médicos')
                     user.groups.add(grupo_medicos)
 
-                    # 3. Prepara o Médico, vincula o usuário recém-criado e salva
                     medico = form.save(commit=False)
                     medico.usuario_medico = user
                     medico.save()
 
-                    return redirect('medico_listar')  # Troque para a URL correta da sua lista
+                    return redirect('medico_listar')
 
             except Exception as e:
-                # Se algo der errado (ex: username já existe), joga o erro na tela
                 form.add_error(None, f"Erro ao salvar: {str(e)}")
     else:
         form = MedicoForm()
 
-    return render(request, 'clinica/medico_form.html', {'form': form})
+    # 2. CORREÇÃO DA SIDEBAR: Passamos as variáveis para o HTML
+    contexto = {
+        'form': form,
+        'is_medico': is_medico,
+        'is_recepcionista': is_recepcionista
+    }
+    return render(request, 'clinica/medico_form.html', contexto)
 
 @login_required
 def medico_editar(request, crm):
     is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
     is_recepcionista = request.user.groups.filter(name='Recepcionista').exists()
 
+    # Pega o médico atual e o usuário do Django atrelado a ele
     medico = get_object_or_404(Medico, pk=crm)
-    form = MedicoForm(request.POST or None, instance=medico)
+    usuario_vinculado = medico.usuario_medico
 
-    if form.is_valid():
-        form.save()
-        return redirect('medico_listar')
+    if request.method == 'POST':
+        # Usamos o form de edição (sem senha)
+        form = MedicoEditForm(request.POST, instance=medico)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Salva as atualizações do médico (telefone, especialidade, etc)
+                    form.save()
+
+                    # Atualiza o Usuário atrelado (caso ele mude de nome, login ou email)
+                    if usuario_vinculado:
+                        usuario_vinculado.username = form.cleaned_data['username']
+                        usuario_vinculado.email = form.cleaned_data['email']
+                        usuario_vinculado.first_name = form.cleaned_data['nome']
+                        usuario_vinculado.save()
+
+                return redirect('medico_listar')
+            except Exception as e:
+                form.add_error(None, f"Erro ao editar: {str(e)}")
+    else:
+        # Quando a página carrega, preenchemos o form com os dados do Usuário do Django
+        dados_iniciais = {}
+        if usuario_vinculado:
+            dados_iniciais = {
+                'username': usuario_vinculado.username,
+                'email': usuario_vinculado.email
+            }
+        form = MedicoEditForm(instance=medico, initial=dados_iniciais)
 
     contexto = {
         'form': form,

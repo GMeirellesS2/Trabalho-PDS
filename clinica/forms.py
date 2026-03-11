@@ -19,3 +19,12 @@ class MedicoForm(forms.ModelForm):
         model = Medico
         # Tiramos o 'usuario_medico' e colocamos o 'nome'
         fields = ['crm', 'nome', 'telefone', 'id_especialidade']
+
+class MedicoEditForm(forms.ModelForm):
+    # Não colocamos a senha aqui, pois editar senha deve ser um processo separado.
+    username = forms.CharField(max_length=150, required=True, label="Nome de Usuário (Login)")
+    email = forms.EmailField(required=False, label="E-mail")
+
+    class Meta:
+        model = Medico
+        fields = ['crm', 'nome', 'telefone', 'id_especialidade']
