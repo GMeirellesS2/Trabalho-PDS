@@ -104,6 +104,7 @@ def buscar_paciente(request):
     
     return render(request, 'clinica/buscar_paciente.html', contexto)
 
+
 @login_required
 def home(request):
     is_medico = Medico.objects.filter(usuario_medico=request.user).exists()
@@ -123,23 +124,30 @@ def home(request):
         contexto['total_pacientes'] = Paciente.objects.count()
         contexto['total_medicos'] = Medico.objects.count()
         contexto['total_consultas'] = Consulta.objects.count()
-        contexto['consultas_hoje_clinica'] = Consulta.objects.filter(data_hora=hoje).count()
-        
-        # NOVA LINHA: Pega todas as consultas de hoje para mostrar na tabela da Recepcionista
-        contexto['consultas_hoje_lista'] = Consulta.objects.filter(data_hora=hoje).select_related('cpf_paciente', 'crm_medico__usuario_medico')
+
+        # CORREÇÃO AQUI: data_hora__date=hoje
+        contexto['consultas_hoje_clinica'] = Consulta.objects.filter(data_hora__date=hoje).count()
+        contexto['consultas_hoje_lista'] = Consulta.objects.filter(data_hora__date=hoje).select_related('cpf_paciente',
+                                                                                                        'crm_medico__usuario_medico')
 
     # ==========================================
     # DADOS DO MÉDICO
     # ==========================================
     if is_medico:
         medico_logado = Medico.objects.get(usuario_medico=request.user)
-        
-        contexto['meus_pacientes_count'] = Paciente.objects.filter(consulta__crm_medico=medico_logado).distinct().count()
-        contexto['minhas_consultas_hoje'] = Consulta.objects.filter(crm_medico=medico_logado, data_hora=hoje, status=Consulta.AGENDADO).count()
-        contexto['minhas_consultas_pendentes'] = Consulta.objects.filter(crm_medico=medico_logado, status=Consulta.AGENDADO).count()
 
-        # NOVA LINHA: Pega apenas as consultas de hoje DESSE médico
-        contexto['consultas_hoje_lista'] = Consulta.objects.filter(crm_medico=medico_logado, data_hora=hoje).select_related('cpf_paciente')
+        contexto['meus_pacientes_count'] = Paciente.objects.filter(
+            consulta__crm_medico=medico_logado).distinct().count()
+
+        # CORREÇÃO AQUI: data_hora__date=hoje
+        contexto['minhas_consultas_hoje'] = Consulta.objects.filter(crm_medico=medico_logado, data_hora__date=hoje,
+                                                                    status=Consulta.AGENDADO).count()
+        contexto['minhas_consultas_pendentes'] = Consulta.objects.filter(crm_medico=medico_logado,
+                                                                         status=Consulta.AGENDADO).count()
+
+        # CORREÇÃO AQUI: data_hora__date=hoje
+        contexto['consultas_hoje_lista'] = Consulta.objects.filter(crm_medico=medico_logado,
+                                                                   data_hora__date=hoje).select_related('cpf_paciente')
 
     return render(request, 'clinica/dashboard.html', contexto)
 
