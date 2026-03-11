@@ -31,3 +31,5 @@ urlpatterns = [
     path('medicos/excluir/<path:crm>/', views.medico_excluir, name='medico_excluir'),
     path('gerenciar_consultas/', views.gerenciar_consultas, name='gerenciar_consultas'),
 ]
+
+#####subindo commit
