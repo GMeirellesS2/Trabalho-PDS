@@ -541,6 +541,9 @@ def paciente_criar(request):
     }
     return render(request, 'clinica/paciente_form.html', contexto)
 
+def servicos(request):
+    return render(request, 'clinica/servicos.html')
+
 
 @login_required
 def paciente_editar(request, cpf):

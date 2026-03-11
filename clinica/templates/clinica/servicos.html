@@ -1,0 +1,51 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/servicos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <title>Servicos</title>
+</head>
+<body>
+    <nav>
+        <div class="logo suave-hover">
+            <img src="{% static 'components/imagem_2026-02-22_175526715-removebg-preview.png' %}" alt="">
+        </div>
+        <div class="navigation">
+            <a href="{% url 'index' %}" class="suave-hover">Pagina Inicial</a>
+            <a href="{% url 'servicos' %}" class="suave-hover">Servicos</a>
+        </div>
+        <div class="login">
+            <a href="{% url 'login' %}" class="suave-hover">Login</a>
+        </div>
+    </nav>
+    <div class="tudo">
+        <div class="planos">
+            <div class="aba suave-hover">
+                <h2>Plano Padrão</h2>
+                <ul>
+                    <li>-5 médicos</li>
+                    <li>-Recepcionistas ilimitadas</li>
+                    <li>-Armazenamento 10GB</li>
+                    <li>-Suporte via e-mail</li>
+                    <br>
+                </ul>
+                <b>R$ 144,90</b>
+            </div>
+            <div class="aba suave-hover">
+                <h2>Plano PRO</h2>
+                <ul>
+                    <li>-Médicos ilimitados</li>
+                    <li>-Recepcionistas ilimitadas</li>
+                    <li>-Armazenamento ilimitado</li>
+                    <li>-Prontuário Digital Avançado</li>
+                    <li>-Suporte 24h Prioritário</li>
+                </ul>
+                <b>R$ 244,90</b>
+            </div>
+        </div>
+        <a href="https://wa.me/5517992388448?text=Quero%20saber%20mais%20sobre%20o%20os%20planos%20da%20cl%C3%ADnica" class="contratar suave-hover">Contratar</a>
+    </div>
+</body>
+</html>

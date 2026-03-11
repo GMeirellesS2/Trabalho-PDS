@@ -19,7 +19,7 @@ body{
     font-style: normal;
 }
 .containerLogin{
-    background-color: aliceblue;
+    background-color: rgb(255, 255, 255);
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -47,7 +47,7 @@ form input{
     box-sizing: border-box;
     padding: 5px;
     border-radius: 10px;
-    background-color: white;
+    background-color: rgb(185, 185, 185);
 }
 
 label{

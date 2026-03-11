@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
+
+html, body {
+    margin: 0;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    color: rgb(0, 0, 0);
+    font-family: "Red Hat Text", sans-serif;
+    font-optical-sizing: auto;
+     font-weight: weight;
+    font-style: normal;
+}
+
+.tudo{
+    display: flex;
+    flex-direction: column;
+}
+
+.planos{
+    display: flex;
+    margin-top: 100px;
+}
+
+.aba{
+    background-color: white;
+    padding: 30px;
+    margin: 20px;
+    border-radius: 25px;
+    padding-bottom: 40px;
+}
+
+h2{
+    font-size: 33px;
+    font-weight: 500;
+}
+
+ul {
+    list-style-type: none; /* Remove os marcadores */
+    padding: 0;           /* Remove o recuo padrão do navegador */
+    margin: 0;            /* Remove a margem padrão do navegador */
+    margin-bottom: 15px;
+}
+
+li {
+    font-size: 18px;
+}
+
+b{
+    font-size: 33px;
+    font-weight: 500;
+}
+
+.contratar{
+    text-align: center;
+    align-self: center;
+    text-decoration: none;
+    margin-top: 30px;
+    margin-right: 20px;
+    font-size: 33px;
+    text-align: center;
+    width: 200px;
+    padding: 5px;
+    background-color: rgb(0, 28, 151);
+    color: rgb(255, 255, 255);
+    border-radius: 50px;
+    text-decoration: none;
+}
