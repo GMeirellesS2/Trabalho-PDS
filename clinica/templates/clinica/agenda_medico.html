@@ -27,7 +27,12 @@
                     <tbody>
                         {% for consulta in consultas %}
                         <tr>
-                            <td class="fw-bold">{{ consulta.data_hora|date:"d/m/Y" }}</td>
+                            <td class="fw-bold">
+                                {{ consulta.data_hora|date:"d/m/Y" }}
+                                {% if consulta.data_hora.time %}
+                                    - {{ consulta.data_hora|time:"H:i" }}
+                                {% endif %}
+                            </td>
                             <td>{{ consulta.cpf_paciente.nome_paciente }}</td>
                             <td>{{ consulta.cpf_paciente.cpf }}</td>
                             <td><span class="badge bg-warning text-dark">{{ consulta.status }}</span></td>

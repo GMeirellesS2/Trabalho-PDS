@@ -35,7 +35,7 @@
                     <tbody>
                         {% for consulta in consultas %}
                         <tr>
-                            <td class="fw-bold">{{ consulta.data_hora|date:"d/m/Y" }}</td>
+                            <td class="fw-bold">{{ consulta.data_hora|date:"d/m/Y H:i" }}</td>
                             <td>{{ consulta.cpf_paciente.nome_paciente }} (CPF: {{ consulta.cpf_paciente.cpf }})</td>
                             <td>
                                 {% if consulta.status == 'Agendada' %}
