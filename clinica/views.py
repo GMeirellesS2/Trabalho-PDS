@@ -117,7 +117,7 @@ def home(request):
         'is_recepcionista': is_recepcionista,
     }
 
-    hoje = date.today()
+    hoje = timezone.localdate()
 
     # ==========================================
     # DADOS DA RECEPCIONISTA / ADMIN
@@ -440,13 +440,16 @@ def consultas_medico(request):
     
     # --- 2. LÓGICA DE FILTROS DA TELA (Hoje, Semana, Mês, Histórico) ---
     filtro = request.GET.get('filtro', 'hoje') # Por padrão, mostra 'hoje'
-    hoje = date.today()
+    
+    # MUDANÇA 1: Usa o fuso horário correto do Django
+    hoje = timezone.localdate() 
     
     # Busca base: todas as consultas deste médico
     consultas = Consulta.objects.filter(crm_medico=medico_logado).select_related('cpf_paciente')
     
     if filtro == 'hoje':
-        consultas = consultas.filter(data_hora=hoje, status=Consulta.AGENDADO)
+        # MUDANÇA 2: Adiciona o __date para buscar as 24h do dia
+        consultas = consultas.filter(data_hora__date=hoje, status=Consulta.AGENDADO)
     elif filtro == 'semana':
         # Calcula o início e fim da semana atual
         inicio_semana = hoje - timedelta(days=hoje.weekday())

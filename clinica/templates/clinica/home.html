@@ -6,7 +6,7 @@
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-secondary mb-0">Olá, {{ request.user.first_name|default:request.user.username }}! 👋</h2>
-        <span class="text-muted">{% now "d de F de Y" %}</span>
+        <span class="text-muted text-capitalize">{% now "d \d\e F \d\e Y" %}</span>
     </div>
 
     {% if is_recepcionista or request.user.is_superuser %}
